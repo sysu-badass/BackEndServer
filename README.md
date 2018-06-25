@@ -3,6 +3,7 @@ This is the back end service for bad ass  scan-code-and-order-meal-system.
 We will use python + flask to achieve it.
 
 # 目录结构
+```
 .
 ├── app
 │   ├── admin
@@ -24,6 +25,7 @@ We will use python + flask to achieve it.
 ├── README.md
 ├── requirements.txt
 ├── run.py
+```
 
 # 目录及文件作用
 * config.py: 项目配置文件
