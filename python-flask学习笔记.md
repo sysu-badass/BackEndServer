@@ -13,3 +13,30 @@
 * 有关python的类的介绍 https://docs.python.org/3/tutorial/classes.html 主要有关其中的namespace and scope
 * python 中immutable basic types 有numbers, strings, tuples，它们都是不可变的。
 * 在python类中，\__str\__() and \__repr\__()的差别参考网址 https://stackoverflow.com/questions/1436703/difference-between-str-and-repr
+
+
+### Python Passlib
+[官方网站](https://passlib.readthedocs.io)
+这个库主要用来将用户密码转化为hash值以保护用户隐私。
+Example:
+```python
+from passlib.hash import oracle10
+from passlib.hash import pbkdf2_sha256
+
+password = “1234”
+user="joey"
+#password_hash将会生成一串hash值
+password_hash = pbkdf2_sha256.hash(password)
+#验证密码与hash值是否对应
+pbkdf2_sha256.verify(password, password_hash) #True
+pbkdf2_sha256.verify("password", password_hash) #False
+#我打算将原始密码生成hash值，再将hash值作为密码存入数据库
+#并且验证密码需要与账号对应，减少hash冲突的情况
+hash = oracle10.hash(password_hash, user="admin")
+#验证password_hash与user admin 是否对应
+oracle10.verify(password_hash, hash, user="admin") #True
+oracle10.verify(password_hash, hash, user="joey") #False
+```
+
+### Flask-login
+[官方网站](https://flask-login.readthedocs.io/en/latest/)
