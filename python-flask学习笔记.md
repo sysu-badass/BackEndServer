@@ -41,3 +41,11 @@ oracle10.verify(password_hash, hash, user="joey") #False
 
 ### Flask-login
 [官方网站](https://flask-login.readthedocs.io/en/latest/)
+
+### Flask-Restful
+[官方网站](https://flask-restful.readthedocs.io/en/latest/)
+* api.add_resoure()方法可以让一个资源拥有多个URL，例如 **api.add_resource(HelloWorld,'/','/hello')** ，那么在'/'与'/hello'URL都会是HelloWorld resource
+* reqparse.RequestParser.parse_args()可以获得 request 里面的数据，而且时以dictionary的形式来读取的。
+
+### Flask-jwt-extended
+[官方网站](https://flask-jwt-extended.readthedocs.io/en/latest)
