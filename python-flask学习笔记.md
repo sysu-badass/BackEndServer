@@ -49,3 +49,6 @@ oracle10.verify(password_hash, hash, user="joey") #False
 
 ### Flask-jwt-extended
 [官方网站](https://flask-jwt-extended.readthedocs.io/en/latest)
+
+### Flask-SQLAlchemy
+[官方网站](http://www.pythondoc.com/flask-sqlalchemy/index.html)
