@@ -41,6 +41,7 @@ from flask_principal import Principal
 from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
 from flask_principal import identity_loaded
+from flask_restful import Api
 
 
 
@@ -49,6 +50,8 @@ from flask_principal import identity_loaded
 # app.config['SECRET_KEY']='123'
 
 db = SQLAlchemy()
+
+api = Api()
 
 principals = Principal()
 
@@ -66,23 +69,24 @@ login_manager.session_protection='strong'
 blueprints = [
     'app.views.sample_view:auth',
 ]
- 
+
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
- 
+
     # Load extensions
     db.init_app(app)
     login_manager.init_app(app)
     principals.init_app(app)
- 
+    api.init_app(app)
+
     # Load blueprints
     for bp_name in blueprints:
         bp = import_string(bp_name)
         app.register_blueprint(bp)
-    
+
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
         iden_loaded(sender, identity)
- 
+
     return app
