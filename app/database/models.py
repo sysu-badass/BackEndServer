@@ -13,7 +13,7 @@ user_role = db.Table('user_role',
 role_permission = db.Table('role_permission',
     db.Column('role_id', db.Integer,
        db.ForeignKey('role.id', ondelete='CASCADE'), primary_key=True),
-    db.Column('permission_id', db.Integer, 
+    db.Column('permission_id', db.Integer,
         db.ForeignKey('permission.id', ondelete='CASCADE'), primary_key=True)
 )
 
@@ -40,13 +40,13 @@ class Role(db.Model):
         return '<Role %r>' % self.rolename
 
 class Permission(db.Model):
-    
+
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(100), nullable=False, unique=True)
 
     roles = db.relationship('Role', secondary='role_permission',
                             backref = db.backref('permissions'))
-    
+
     def __repr__(self):
         return '<Permission %r>' % self.url
 
@@ -61,6 +61,16 @@ class OrderHistory(db.Model):
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref='order_histories')
 
+    def __json__(self):
+        return {
+            "order_history_id": self.id,
+            "date": str(self.date),
+            "desk_number": self.desk_number,
+            "total_price": self.total_price,
+            "restaurant_id": self.restaurant_id,
+            "user_id": self.user_id
+        }
+
 class OrderHistoryItem(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -74,6 +84,17 @@ class OrderHistoryItem(db.Model):
         db.ForeignKey('order_history.id', ondelete='CASCADE'), nullable=False)
     order_history = db.relationship('OrderHistory', backref='order_history_items')
 
+    def __json__(self):
+        return {
+            "order_history_item_id": self.id,
+            "number": self.number
+            "name": str.name,
+            "description": self.description,
+            "price": self.price,
+            "image": self.image,
+            "order_history_id": self.order_history_id
+        }
+
 class Comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -86,7 +107,7 @@ class Comment(db.Model):
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer,
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
-    
+
     user = db.relationship('User', backref='comments')
     restaurant = db.relationship('Restaurant', backref='comments')
 
@@ -114,6 +135,18 @@ class Food(db.Model):
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
     restaurant = db.relationship('Restaurant', backref='foods')
 
+    def __json__(self):
+        return {
+            "food_id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "food_type": self.food_type,
+            "description": self.description,
+            "image": self.image,
+            "available": self.available,
+            "restaurant_id": self.restaurant_id
+        }
+
 
 class Order(db.Model):
 
@@ -125,6 +158,14 @@ class Order(db.Model):
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
     restaurant = db.relationship('Restaurant', backref='orders')
 
+    def __json__(self):
+        return {
+            "order_id": self.id,
+            "date": str(self.date),
+            "desk_number": self.desk_number,
+            "total_price": self.total_price,
+            "restaurant_id": self.restaurant_id
+        }
 
 class OrderItem(db.Model):
 
@@ -138,3 +179,14 @@ class OrderItem(db.Model):
     order_id = db.Column(db.Integer,
         db.ForeignKey('order.id', ondelete='CASCADE'), nullable=False)
     order = db.relationship('Order', backref='order_items')
+
+    def __json__(self):
+        return {
+            "order_item_id": self.id,
+            "order_id": self.order_id,
+            "name": self.name,
+            "number": self.number,
+            "price": self.price,
+            "description": self.description,
+            "image": self.image
+        }
