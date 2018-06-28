@@ -79,6 +79,9 @@ oracle10.verify(password_hash, hash, user="joey") #False
 
 ### Flask-SQLAlchemy
 [官方网站](http://www.pythondoc.com/flask-sqlalchemy/index.html)
++ 经过实验，发现若使用MySQL作为SQLAlchemy的数据库的话，需要预先创建database，然后db.create_all()才可以成功在里面创建tables。
++ query返回的都是list数据形式，所以需要索引或者filter_by()之类的方法去获得其中的类
++ db.session.commit()经实验发现可以在数据库里创建data
 
 ### MySQL
 + 在本次实验中，我把MySQL的root@localhost的密码暂时设置为root123456.[具体介绍](https://www.cnblogs.com/fireporsche/p/8535002.html)
