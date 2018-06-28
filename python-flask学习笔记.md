@@ -9,14 +9,37 @@
 + 要运行Flask程序，需要以下命令，在Linux环境下，我们需要告诉系统Flask app是哪一个文件。先**export FLASK_APP = main.py**，再**flask run**。这里的main.py文件指的是我们的程序实例，里面有视图函数以及路由等信息。
 + 若想进入debug模式，需要 **app.run(debug=True)** 在app.run()函数里面添加参数debug，然后需要命令**export FLASK_DEBUG=1**，之后在运行命令 **flask run** 即可
 + [Blueprint()函数的解析](https://stackoverflow.com/questions/24420857/what-are-flask-blueprints-exactly)
-+ [difference between staticmethod and classmethod](https://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python)
+
 
 
 ### python
 * 有关python的类的介绍 https://docs.python.org/3/tutorial/classes.html 主要有关其中的namespace and scope
 * python 中immutable basic types 有numbers, strings, tuples，它们都是不可变的。
 * 在python类中，\__str\__() and \__repr\__()的差别参考网址 https://stackoverflow.com/questions/1436703/difference-between-str-and-repr
++ [difference between staticmethod and classmethod](https://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python)
++ [datetime 的用法](https://pymotw.com/3/datetime/).可以返回订单的日期，不过需要用str()函数将其从datetime.date类型转为string
+Example:
+```python
+import datetime
 
+today = datetime.date.today()
+print(today)
+print('ctime  :', today.ctime())
+tt = today.timetuple()
+print('tuple  : tm_year  =', tt.tm_year)
+print('         tm_mon   =', tt.tm_mon)
+print('         tm_mday  =', tt.tm_mday)
+print('         tm_hour  =', tt.tm_hour)
+print('         tm_min   =', tt.tm_min)
+print('         tm_sec   =', tt.tm_sec)
+print('         tm_wday  =', tt.tm_wday)
+print('         tm_yday  =', tt.tm_yday)
+print('         tm_isdst =', tt.tm_isdst)
+print('ordinal:', today.toordinal())
+print('Year   :', today.year)
+print('Mon    :', today.month)
+print('Day    :', today.day)
+```
 
 ### Python Passlib
 [官方网站](https://passlib.readthedocs.io)
@@ -43,6 +66,8 @@ oracle10.verify(password_hash, hash, user="joey") #False
 
 ### Flask-login
 [官方网站](https://flask-login.readthedocs.io/en/latest/)
++ By default, when a user attempts to access a login_required view without being logged in, Flask-Login will flash a message and redirect them to the log in view. (If the login view is not set, it will abort with a 401 error.)
++
 
 ### Flask-Restful
 [官方网站](https://flask-restful.readthedocs.io/en/latest/)
@@ -56,4 +81,14 @@ oracle10.verify(password_hash, hash, user="joey") #False
 [官方网站](http://www.pythondoc.com/flask-sqlalchemy/index.html)
 
 ### MySQL
-在本次实验中，我把MySQL的root@localhost的密码暂时设置为123.
++ 在本次实验中，我把MySQL的root@localhost的密码暂时设置为root123456.[具体介绍](https://www.cnblogs.com/fireporsche/p/8535002.html)
++ 在mysql中，source /path/*.sql 可以导入sql建立数据库。
++ SHOW COLUMNS FROM [TABLE_NAME] FROM [DATABASE_NAME] 可以展示talbe的column属性
++ DROP [DATABASE_NAME] 可以删除database。
+
+### cURL
+在本次实验中，我发现网上大部分教程都是用cURL进行后台的测试与调试，以下是我记录的一些简单的用法
++ 如 **curl http://localhost:5000/todo1 -d "data=Remember the milk" -X PUT -v**, -X 指的是使用的HTTP方法，-d指的是后面的是作为数据传送的，例子里的data则可以作为python字符串的key从而在request.form里面检索。也可以用flask_restful 里面的reqparse.RequestParser().parse_args()获取。-v使得返回的结果更加详细。
++ **curl http://localhost:5000/todo1** 这可以直接返回GET方法的Response。
++ **curl http://localhost:5000/todos/todo2 -X DELETE** delete的例子
++ **curl http://localhost:5000/todos -d "task=something new" -X POST** POST的例子

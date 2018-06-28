@@ -29,12 +29,12 @@ class UserDao:
     def get_user(username):
         user = User.query.filter_by(username=username).first()
         return user
-    
+
     @staticmethod
     def update_user(user_id, key, value):
         user = UserDao.get_user_by_id(user_id)
         DaoHelper.update(user, key, value)
-    
+
     @staticmethod
     def del_user(user_id):
         user = UserDao.get_user_by_id(user_id)
@@ -70,12 +70,12 @@ class OrderHistoryDao:
     def get_order_history(id):
         order = OrderHistory.query.filter_by(id=id).first()
         return order
-    
+
     @staticmethod
     def get_user_orders(user_id):
         orders = OrderHistory.query.filter_by(user_id=user_id).all()
         return orders
-    
+
     @staticmethod
     def add_order_history(date, desk_number, total_price,
                         restaurant_id, user_id, order_history_items):
@@ -85,7 +85,7 @@ class OrderHistoryDao:
         for item in order_history_items:
             order.order_history_items.append(item)
         db.session.add(order)
-    
+
     @staticmethod
     def del_order_history(order_id):
         order = OrderHistoryDao.get_order_history(order_id)
@@ -114,7 +114,7 @@ class CommentDao:
     def get_restaurant_comments(restaurant_id):
         comments = Comment.query.filter_by(restaurant_id=restaurant_id).all()
         return comments
-    
+
     @staticmethod
     def del_comment(comment_id):
         comment = CommentDao.get_comment_by_id(comment_id)
@@ -132,17 +132,17 @@ class RestaurantDao:
     def get_restaurant_by_id(restaurant_id):
         restaurant = Restaurant.query.filter_by(id=restaurant_id).first()
         return restaurant
-    
+
     @staticmethod
     def get_restaurants(user_id):
         restaurants = Restaurant.query.filter_by(user_id=user_id).all()
         return restaurants
-    
+
     @staticmethod
     def update_restaurant(restaurant_id, key, value):
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
         DaoHelper.update(restaurant, key, value)
-    
+
     @staticmethod
     def del_restaurant(restaurant_id):
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
@@ -162,7 +162,7 @@ class FoodDao:
     def get_food_by_id(food_id):
         food = Food.query.filter_by(id=food_id).first()
         return food
-    
+
     @staticmethod
     def get_foods(restaurant_id):
         foods = Food.query.filter_by(restaurant_id=restaurant_id).all()
@@ -172,7 +172,7 @@ class FoodDao:
     def update_food(food_id, key, value):
         food = FoodDao.get_food_by_id(food_id)
         DaoHelper.update(food, key, value)
-    
+
     @staticmethod
     def del_food(food_id):
         food = FoodDao.get_food_by_id(food_id)
@@ -202,45 +202,45 @@ class OrderDao:
     def del_order(order_id):
         order = OrderDao.get_order(order_id)
         DaoHelper.delete(db, order)
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
-    
-    
-    
-    
-    
 
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # def get_order_item(order_id):
     #     order_items = OrderItem.query.filter_by(order_id=order_id).all()
     #     return order_items
-    
 
-    
-    
-        
-   
-    
-    
 
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # def add_perm_to_role(url, rolename):
     #     permission = self.get_permission(url)
     #     role = self.get_role(rolename)
