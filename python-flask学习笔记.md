@@ -73,6 +73,7 @@ oracle10.verify(password_hash, hash, user="joey") #False
 [官方网站](https://flask-restful.readthedocs.io/en/latest/)
 * api.add_resoure()方法可以让一个资源拥有多个URL，例如 **api.add_resource(HelloWorld,'/','/hello')** ，那么在'/'与'/hello'URL都会是HelloWorld resource
 * reqparse.RequestParser.parse_args()可以获得 request 里面的数据，而且时以dictionary的形式来读取的。
+* 如果request传送的是数组，那么我们通过argument得到的也会是数组， [官方网站解释](https://flask-restful.readthedocs.io/en/0.3.5/reqparse.html)
 
 ### Flask-jwt-extended
 [官方网站](https://flask-jwt-extended.readthedocs.io/en/latest)
@@ -82,6 +83,7 @@ oracle10.verify(password_hash, hash, user="joey") #False
 + 经过实验，发现若使用MySQL作为SQLAlchemy的数据库的话，需要预先创建database，然后db.create_all()才可以成功在里面创建tables。
 + query返回的都是list数据形式，所以需要索引或者filter_by()之类的方法去获得其中的类
 + db.session.commit()经实验发现可以在数据库里创建data
++ db.query.filter_by(**Kwargs)可以传入多个参数作为filter，不过好像只能是用相等操作符来限制， [具体例子](http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.filter_by) ，但是db.query.filter(*criterion)可以，主要在于filter_by()是通过=赋值来检索的，而filter()这是通过==等跟复杂的关系来检索的。 [具体例子](http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.filter)
 
 ### MySQL
 + 在本次实验中，我把MySQL的root@localhost的密码暂时设置为root123456.[具体介绍](https://www.cnblogs.com/fireporsche/p/8535002.html)

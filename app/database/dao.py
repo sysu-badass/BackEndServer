@@ -16,8 +16,9 @@ from app import db
 
 class UserDao:
     @staticmethod
-    def add_user(username, password):
-        usr = User(username=username, password=password)
+    #添加id作为参数
+    def add_user(id, username, password):
+        usr = User(id=id, username=username, password=password)
         db.session.add(usr)
 
     @staticmethod
@@ -64,7 +65,7 @@ class PermissionDao:
         permission = Permission.query.filter_by(url=url).first()
         return permission
 
-
+#需要添加 restaurant_id 来限制get_user_orders()
 class OrderHistoryDao:
     @staticmethod
     def get_order_history(id):
@@ -72,23 +73,46 @@ class OrderHistoryDao:
         return order
 
     @staticmethod
-    def get_user_orders(user_id):
-        orders = OrderHistory.query.filter_by(user_id=user_id).all()
+    def get_user_orders(user_id, restaurant_id):
+        orders = OrderHistory.query.filter_by(user_id=user_id, restaurant_id=restaurant_id).all()
         return orders
 
     @staticmethod
-    def add_order_history(date, desk_number, total_price,
-                        restaurant_id, user_id, order_history_items):
-        order = OrderHistory(date=date, desk_number=desk_number,
+    def add_order_history(id, date, desk_number, total_price,
+                        restaurant_id, user_id):
+        order = OrderHistory(id=id, date=date, desk_number=desk_number,
                         total_price=total_price, restaurant_id=restaurant_id,
                         user_id=user_id)
-        for item in order_history_items:
-            order.order_history_items.append(item)
         db.session.add(order)
 
     @staticmethod
     def del_order_history(order_id):
         order = OrderHistoryDao.get_order_history(order_id)
+        DaoHelper.delete(db, order)
+
+#Create OrderHistoryItemDao
+class OrderHistoryItemDao:
+    @staticmethod
+    def get_order_history_item(hitory_id, history_item_id):
+        order_item = OrderHistoryItem.query.filter_by(id=history_item_id, order_history_id=hitory_id).first()
+        return order_item
+
+    @staticmethod
+    def get_order_history_items(hitory_id):
+        order_items = OrderHistoryItem.query.filter_by(order_history_id=hitory_id).all()
+        return order_items
+
+    @staticmethod
+    def add_order_history_item(id, number, name,
+                            description, image, price, order_history_id):
+        order = OrderHistoryItem(id=id, number=number, name=name,
+                        description=description, image=image,
+                        price=price, order_history_id=order_history_id)
+        db.session.add(order)
+
+    @staticmethod
+    def del_order_history_item(hitory_id, history_item_id):
+        order = OrderHistoryDao.get_order_history_item(hitory_id, history_item_id)
         DaoHelper.delete(db, order)
 
 
@@ -120,11 +144,11 @@ class CommentDao:
         comment = CommentDao.get_comment_by_id(comment_id)
         DaoHelper.delete(db, comment)
 
-
+#改变RestaurantDao的一些方法
 class RestaurantDao:
     @staticmethod
-    def add_restaurant(name, infomation, user_id):
-        restaurant = Restaurant(name=name, infomation=infomation,
+    def add_restaurant(restaurant_id, user_id):
+        restaurant = Restaurant(id=restaurant_id,
                             user_id=user_id)
         db.session.add(restaurant)
 
@@ -148,12 +172,12 @@ class RestaurantDao:
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
         DaoHelper.delete(db, restaurant)
 
-
+#Add id as argument to add_food
 class FoodDao:
     @staticmethod
-    def add_food(name, price, food_type,
+    def add_food(id, name, price, food_type,
             description, image, available, restaurant_id):
-        food = Food(name=name, price=price, food_type=food_type,
+        food = Food(id=id, name=name, price=price, food_type=food_type,
                 description=description, image=image, available=available,
                 restaurant_id=restaurant_id)
         db.session.add(food)
@@ -161,6 +185,11 @@ class FoodDao:
     @staticmethod
     def get_food_by_id(food_id):
         food = Food.query.filter_by(id=food_id).first()
+        return food
+
+    @staticmethod
+    def get_food_by_name(food_name):
+        food = Food.query.filter_by(name=food_name).first()
         return food
 
     @staticmethod
@@ -178,14 +207,12 @@ class FoodDao:
         food = FoodDao.get_food_by_id(food_id)
         DaoHelper.delete(db, food)
 
-
+#add id to add_order()
 class OrderDao:
     @staticmethod
-    def add_order(date, desk_number, total_price, restaurant_id, order_items):
-        order = Order(date=date, desk_number=desk_number,
+    def add_order(id, date, desk_number, total_price, restaurant_id):
+        order = Order(id=id, date=date, desk_number=desk_number,
                     total_price=total_price, restaurant_id=restaurant_id)
-        for item in order_items:
-            order.order_items.append(item)
         db.session.add(order)
 
     @staticmethod
@@ -201,6 +228,36 @@ class OrderDao:
     @staticmethod
     def del_order(order_id):
         order = OrderDao.get_order(order_id)
+        DaoHelper.delete(db, order)
+
+#Create OrderIrem class
+class OrderItemDao:
+    @staticmethod
+    def get_order_item(order_item_id):
+        order_item = OrderItem.query.filter_by(id=order_item_id).first()
+        return order_item
+
+    @staticmethod
+    def get_order_items(order_id):
+        order_items = OrderItem.query.filter_by(order_id=order_id).all()
+        return order_items
+
+    @staticmethod
+    def add_order_item(id, number, name,
+                            description, image, price, order__id):
+        order = OrderItem(id=id, number=number, name=name,
+                        description=description, image=image,
+                        price=price, order_id=order__id)
+        db.session.add(order)
+
+    @staticmethod
+    def update_order_item(order_item_id, key, value):
+        order_item = OrderItemDao.get_order_item(order_item_id)
+        DaoHelper.update(order_item, key, value)
+
+    @staticmethod
+    def del_order_item(order_id, order_item_id):
+        order = OrderDao.get_order_item(hitory_id, history_item_id)
         DaoHelper.delete(db, order)
 
 

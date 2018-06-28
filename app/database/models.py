@@ -87,8 +87,8 @@ class OrderHistoryItem(db.Model):
     def __json__(self):
         return {
             "order_history_item_id": self.id,
-            "number": self.number
-            "name": str.name,
+            "number": self.number,
+            "name": self.name,
             "description": self.description,
             "price": self.price,
             "image": self.image,
