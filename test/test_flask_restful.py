@@ -16,6 +16,8 @@ USERS = {
     'user3': {'task': 3}
 }
 
+#经过本次实验，证明parser.parse_args()只会读取当前request中的数据
+#并且用对应的key把数据获取
 
 def abort_if_todo_doesnt_exist(todo_id):
     if todo_id not in TODOS:
