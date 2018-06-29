@@ -40,7 +40,7 @@ from flask_login import LoginManager
 from flask_principal import Principal
 from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
-from flask_principal import identity_loaded
+from flask_principal import identity_loaded 
 
 
 
@@ -66,12 +66,15 @@ login_manager.session_protection='strong'
 blueprints = [
     'app.views.sample_view:auth',
 ]
- 
+
+import app.database.models
+
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
  
     # Load extensions
+    db.app = app
     db.init_app(app)
     login_manager.init_app(app)
     principals.init_app(app)

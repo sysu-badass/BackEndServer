@@ -16,6 +16,8 @@ from app.admin.admin import AccessUrlPermission
 
 auth = Blueprint('auth', __name__, url_prefix='')
 
+from app.database.models import User
+
 @login_manager.user_loader
 def load_user(userid):
     # Return an instance of the User model
