@@ -33,7 +33,7 @@ parser.add_argument('restaurant_admin_password')
 parser.add_argument('restaurant_name')
 parser.add_argument('restaurant_information')
 #action='append'可以使得parser的key得到多个值
-parser.add_argument('food_id', action='append')
+parser.add_argument('food_id')
 parser.add_argument('name')
 parser.add_argument('food_type')
 parser.add_argument('available')
