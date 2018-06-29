@@ -17,8 +17,8 @@ from app import db
 class UserDao:
     @staticmethod
     #添加id作为参数
-    def add_user(id, username, password):
-        usr = User(id=id, username=username, password=password)
+    def add_user(id, password):
+        usr = User(id=id, password=password)
         db.session.add(usr)
 
     @staticmethod
@@ -79,10 +79,12 @@ class OrderHistoryDao:
 
     @staticmethod
     def add_order_history(id, date, desk_number, total_price,
-                        restaurant_id, user_id):
+                        restaurant_id, user_id, order_history_items):
         order = OrderHistory(id=id, date=date, desk_number=desk_number,
                         total_price=total_price, restaurant_id=restaurant_id,
                         user_id=user_id)
+        for order_history_item in order_history_items:
+            order.order_history_items.append(order_history_item)
         db.session.add(order)
 
     @staticmethod
@@ -93,8 +95,8 @@ class OrderHistoryDao:
 #Create OrderHistoryItemDao
 class OrderHistoryItemDao:
     @staticmethod
-    def get_order_history_item(hitory_id, history_item_id):
-        order_item = OrderHistoryItem.query.filter_by(id=history_item_id, order_history_id=hitory_id).first()
+    def get_order_history_item(history_item_id):
+        order_item = OrderHistoryItem.query.filter_by(id=history_item_id).first()
         return order_item
 
     @staticmethod
@@ -114,6 +116,11 @@ class OrderHistoryItemDao:
     def del_order_history_item(hitory_id, history_item_id):
         order = OrderHistoryDao.get_order_history_item(hitory_id, history_item_id)
         DaoHelper.delete(db, order)
+
+    @staticmethod
+    def update_order_history_item(order_history_item_id, key, value):
+        order_history_item = OrderHistoryItemDao.get_order_item(order_history_item_id)
+        DaoHelper.update(order_history_item, key, value)
 
 
 class CommentDao:
@@ -210,9 +217,11 @@ class FoodDao:
 #add id to add_order()
 class OrderDao:
     @staticmethod
-    def add_order(id, date, desk_number, total_price, restaurant_id):
+    def add_order(id, date, desk_number, total_price, restaurant_id, order_items):
         order = Order(id=id, date=date, desk_number=desk_number,
                     total_price=total_price, restaurant_id=restaurant_id)
+        for item in order_items:
+            order.order_items.append(item)
         db.session.add(order)
 
     @staticmethod

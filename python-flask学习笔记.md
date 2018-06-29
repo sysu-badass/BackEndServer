@@ -41,6 +41,18 @@ print('Mon    :', today.month)
 print('Day    :', today.day)
 ```
 
++ 在python中, list的赋值是相当于指针的，例如
+
+```python
+a = [1, 2, 3, 4]
+b = a
+a.append(5)
+print(b)
+#输出将是[1, 2, 3, 4, 5]
+```
+
+[参考解释](https://stackoverflow.com/questions/2612802/how-to-clone-or-copy-a-list) 可以用list.copy()或者list(old_list)来实现list的clone。除了list, dictionary等mutable类型都是如此，赋值相当于赋值引用而不是实际的copy
+
 ### Python Passlib
 [官方网站](https://passlib.readthedocs.io)
 这个库主要用来将用户密码转化为hash值以保护用户隐私。
