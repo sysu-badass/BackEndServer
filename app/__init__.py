@@ -40,12 +40,8 @@ from flask_login import LoginManager
 from flask_principal import Principal
 from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
-<<<<<<< HEAD
-from flask_principal import identity_loaded 
-=======
 from flask_principal import identity_loaded
 from flask_restful import Api
->>>>>>> 19594a3c1ccb94b65770d2d35781f930bd06a3c3
 
 
 
@@ -75,6 +71,7 @@ blueprints = [
 ]
 
 import app.database.models
+from app.views.joey_view import *
 
 def create_app(config):
     app = Flask(__name__)

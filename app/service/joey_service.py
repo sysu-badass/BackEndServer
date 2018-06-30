@@ -1,16 +1,16 @@
 from flask import Flask
 
-from database.models import User
-from database.models import Role
-from database.models import Permission
-from database.models import OrderHistory
-from database.models import OrderHistoryItem
-from database.models import Comment
-from database.models import Restaurant
-from database.models import Food
-from database.models import Order
-from database.models import OrderItem
-from database.dao_helper import DaoHelper
+from app.database.models import User
+from app.database.models import Role
+from app.database.models import Permission
+from app.database.models import OrderHistory
+from app.database.models import OrderHistoryItem
+from app.database.models import Comment
+from app.database.models import Restaurant
+from app.database.models import Food
+from app.database.models import Order
+from app.database.models import OrderItem
+from app.database.dao_helper import DaoHelper
 from datetime import datetime
 
 from app import db
@@ -24,7 +24,7 @@ class service:
     #返回一串hash值
     @staticmethod
     def hash_password(password, account):
-        return oracle10.hash(str`(password), user=str(account))
+        return oracle10.hash(str(password), user=str(account))
 
     #如果密码正确返回True
     @staticmethod

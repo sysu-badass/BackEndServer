@@ -299,7 +299,7 @@ class admin_menu_food(Resource):
                                 food['image'], food['available'], food['restaurant_id'])
         else:
             keys, values = service.get_keys_values(data['foods'][0])
-            FoodDao.update_food(food, keys, values).
+            FoodDao.update_food(food, keys, values)
         return {"URL": "/restaurants/%d/menu/%d"%(restaurant_id, food_id)}, 200
 
 
