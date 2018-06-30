@@ -30,14 +30,11 @@ class AccessUrlPermission(Permission):
 
 def iden_loaded(sender, identity):
     identity.user = current_user
-    print('on_identity_loaded')
 
     if hasattr(current_user, 'id'):
-        print('1')
         identity.provides.add(UserNeed(current_user.id))
 
     if hasattr(current_user, 'roles'):
-        print('2')
         for role in current_user.roles:
             identity.provides.add(RoleNeed(role.rolename))
             if hasattr(role, 'permissions'):
