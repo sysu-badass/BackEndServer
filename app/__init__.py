@@ -42,6 +42,7 @@ from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
 from flask_principal import identity_loaded
 from flask_restful import Api
+from app.views.joey_view import *
 
 
 
@@ -65,11 +66,11 @@ login_manager.session_protection='strong'
 # @login_manger.user_loader
 # def load_user(user_id):
 #     return User.query.get(int(user_id))
-
+'''
 blueprints = [
     'app.views.sample_view:auth',
 ]
-
+'''
 
 import app.database.models
 
