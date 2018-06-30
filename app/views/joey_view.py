@@ -73,7 +73,7 @@ class Customer_orders(Resource):
 
 #顾客查看订单
 class Customer_order(Resource):
-    def get(self, order_id):
+    def get(self, order_id, user_id):
         customer_order_items = OrderHistoryItemDao.get_order_history_items(order_id)
         if customer_order_items == None:
             return {'message': "No such order exists"}, 400
@@ -81,7 +81,7 @@ class Customer_order(Resource):
 
 #顾客查看订单中的菜品的信息
 class Customer_order_food(Resource):
-    def get(self, order_id, food_id):
+    def get(self, order_id, food_id, user_id):
         customer_order_items = OrderHistoryItemDao.get_order_history_items(order_id)
         for customer_order_item in customer_order_items:
             food = FoodDao.get_food_by_name(customer_order_item.name)
@@ -91,13 +91,13 @@ class Customer_order_food(Resource):
 
 #顾客查看菜单
 class Customer_menu(Resource):
-    def get(self, restaurant_id):
+    def get(self, restaurant_id, user_id):
         foods = FoodDao.get_foods(restaurant_id)
         return {'foods': [food.__json__ for food in foods]}, 200
 
 #顾客查看菜单中菜品的信息
 class Customer_menu_food(Resource):
-    def get(self, food_id):
+    def get(self, food_id, user_id):
         data = parser.parse_args()
         food = FoodDao.get_food_by_id(food_id)
         if food == None:
@@ -108,10 +108,10 @@ class Customer_menu_food(Resource):
 
 #返回支付方法对应的网站,这是一个json数组类型
 class Customer_payment(Resource):
-    def get(self):
+    def get(self, user_id):
         return {[{"URL": "example.com"}]}, 200
 
-    def post(self):
+    def post(self, user_id):
         data = parser.parse_args()
         order = data['orders'][0]
         order_items = data['order_items']
@@ -203,8 +203,7 @@ class admin_orders(Resource):
                             order['restaurant_id'], order_items)
         return {"URL": "/restaurants/%d/orders/%d"%(restaurant_id, order['order_id'])}, 200
 
-    def delete(self):
-        
+    def delete(self, restaurant_id):
         data = parser.parse_args()
         order = data['orders'][0]
         if OrderDao.get_order(order['order_id']) == None:
@@ -215,7 +214,7 @@ class admin_orders(Resource):
 
 #餐厅管理员操作餐厅订单
 class admin_order(Resource):
-    def get(self, order_id):
+    def get(self, order_id, restaurant_id):
         order_items = OrderItemDao.get_order_items(order_id)
         return {'order_items': [order_item.__json__ for order_item in order_items]}, 200
 
@@ -235,7 +234,7 @@ class admin_order(Resource):
                                 order_items[i]['price'], order_items[i]['order_id'])
         return {"URL": "/restaurants/%d/orders/%d"%(restaurant_id, order_id)}, 200
     #只能传入一个参数
-    def delete(self, order_id):
+    def delete(self, order_id, restaurant_id):
         if OrderDao.get_order(order_id) != None:
             OrderDao.del_order(order_id)
             return 204
@@ -253,7 +252,7 @@ class admin_menu(Resource):
         foods = FoodDao.get_foods(restaurant_id)
         return {'foods': [food.__json__ for food in foods]}, 200
 
-    def post(self):
+    def post(self, restaurant_id):
         data = parser.parse_args()
         #foods是一个list类型，里面的元素是food_item的json
         foods = data['foods']
@@ -271,7 +270,7 @@ class admin_menu(Resource):
         return {'URL': "/restaurants/%d/menu/%d"%(foods[0]['restaurant_id'], foods[0]['food_id'])}, 200
 
     #传入的food只有一个元素
-    def delete(self):
+    def delete(self, restaurant_id):
         data = parser.parse_args()
         if FoodDao.get_food_by_id(data['foods']['food_id']) != None:
             FoodDao.del_food(data['foods']['food_id'])
@@ -282,7 +281,7 @@ class admin_menu(Resource):
 
 #餐厅管理员操作餐厅菜单中的菜品
 class admin_menu_food(Resource):
-    def get(self, food_id):
+    def get(self, food_id, restaurant_id):
         food = FoodDao.get_food_by_id(food_id)
         if food == None:
             return {"message": "No such food exists in this menu"}, 400
@@ -303,7 +302,7 @@ class admin_menu_food(Resource):
         return {"URL": "/restaurants/%d/menu/%d"%(restaurant_id, food_id)}, 200
 
 
-    def delete(self, food_id):
+    def delete(self, food_id, restaurant_id):
         if FoodDao.get_food_by_id(food_id) != None:
             FoodDao.del_food(food_id)
             return 204

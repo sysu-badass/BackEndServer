@@ -65,10 +65,11 @@ login_manager.session_protection='strong'
 # @login_manger.user_loader
 # def load_user(user_id):
 #     return User.query.get(int(user_id))
-
+'''
 blueprints = [
     'app.views.sample_view:auth',
 ]
+'''
 
 import app.database.models
 from app.views.joey_view import *
@@ -102,9 +103,9 @@ def create_app(config):
 
 
     # Load blueprints
-    for bp_name in blueprints:
-        bp = import_string(bp_name)
-        app.register_blueprint(bp)
+    # for bp_name in blueprints:
+    #     bp = import_string(bp_name)
+    #     app.register_blueprint(bp)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

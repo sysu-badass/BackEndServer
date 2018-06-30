@@ -45,6 +45,7 @@ class AccessOrderPermission(Permission):
         super(AccessOrderPermission, self).__init__(need)
 
 merchantPermission = Permission(RoleNeed('merchant'))
+adminPermission = Permission(RoleNeed('admin'))
 
 def iden_loaded(sender, identity):
     identity.user = current_user
