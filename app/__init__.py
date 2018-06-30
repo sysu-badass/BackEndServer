@@ -40,7 +40,12 @@ from flask_login import LoginManager
 from flask_principal import Principal
 from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
+<<<<<<< HEAD
 from flask_principal import identity_loaded 
+=======
+from flask_principal import identity_loaded
+from flask_restful import Api
+>>>>>>> 19594a3c1ccb94b65770d2d35781f930bd06a3c3
 
 
 
@@ -49,6 +54,8 @@ from flask_principal import identity_loaded
 # app.config['SECRET_KEY']='123'
 
 db = SQLAlchemy()
+
+api = Api()
 
 principals = Principal()
 
@@ -72,20 +79,38 @@ import app.database.models
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
- 
+
     # Load extensions
     db.app = app
     db.init_app(app)
     login_manager.init_app(app)
     principals.init_app(app)
- 
+    api.init_app(app)
+
+    #Add the restful resource to the URI
+    api.add_resource(Customer_login, '/users/login')
+    api.add_resource(Customer_menu, '/users/<user_id>/<restaurant_id>/menu')
+    api.add_resource(Customer_menu_food, '/users/<user_id>/<restaurant_id>/menu/<food_id>')
+    api.add_resource(Customer_orders, '/users/<user_id>/<restaurant_id>/orders')
+    api.add_resource(Customer_order, '/users/<user_id>/<restaurant_id>/orders/<order_id>')
+    api.add_resource(Customer_order_food, '/users/<user_id>/<restaurant_id>/orders/<order_id>/<food_id>')
+    api.add_resource(Customer_payment, '/users/<user_id>/<restaurant_id>/payment')
+    api.add_resource(admin_join, '/restaurants/join')
+    api.add_resource(admin_login, '/restaurants/login')
+    api.add_resource(admin_orders, '/restaurants/<restaurant_id>/orders')
+    api.add_resource(admin_order, '/restaurants/<restaurant_id>/orders/<order_id>')
+    api.add_resource(admin_order_food, '/restaurants/<restaurant_id>/orders/<order_id>/<food_id>')
+    api.add_resource(admin_menu, '/restaurants/<restaurant_id>/menu')
+    api.add_resource(admin_menu_food, '/restaurants/<restaurant_id>/menu/<food_id>')
+
+
     # Load blueprints
     for bp_name in blueprints:
         bp = import_string(bp_name)
         app.register_blueprint(bp)
-    
+
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
         iden_loaded(sender, identity)
- 
+
     return app

@@ -28,6 +28,24 @@ class AccessUrlPermission(Permission):
         need = AccessUrlNeed(url)
         super(AccessUrlPermission, self).__init__(need)
 
+foodNeed = namedtuple('food', ['method', 'value'])
+AccessFoodNeed = partial(foodNeed, 'accessFood')
+
+class AccessFoodPermission(Permission):
+    def __init__(self, url):
+        need = AccessFoodNeed(url)
+        super(AccessFoodPermission, self).__init__(need)
+
+orderNeed = namedtuple('order', ['method', 'value'])
+AccessOrderNeed = partial(orderNeed, 'accessFood')
+
+class AccessOrderPermission(Permission):
+    def __init__(self, url):
+        need = AccessOrderNeed(url)
+        super(AccessOrderPermission, self).__init__(need)
+
+merchantPermission = Permission(RoleNeed('merchant'))
+
 def iden_loaded(sender, identity):
     identity.user = current_user
 
