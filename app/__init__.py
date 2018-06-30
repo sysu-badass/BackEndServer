@@ -41,8 +41,7 @@ from flask_principal import Principal
 from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
 from flask_principal import identity_loaded
-from flask_restful import Api
-from app.views.joey_view import *
+from app.views import api
 
 
 
@@ -51,8 +50,6 @@ from app.views.joey_view import *
 # app.config['SECRET_KEY']='123'
 
 db = SQLAlchemy()
-
-api = Api()
 
 principals = Principal()
 

@@ -5,7 +5,7 @@ from flask_principal import Principal, Identity, AnonymousIdentity, \
      identity_changed
 from flask_restful import reqparse, abort, Api, Resource
 
-from app import login_manager, api
+from app import login_manager
 from app.database.dao import UserDao, OrderHistory, OrderHistoryItem, \
      Restaurant, Food, Order, OrderItem
 
