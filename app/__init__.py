@@ -41,8 +41,7 @@ from flask_principal import Principal
 from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
 from flask_principal import identity_loaded
-from flask_restful import Api
-
+from flask_restful import reqparse, abort, Api, Resource
 
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root123456@localhost/rbac'
@@ -50,8 +49,6 @@ from flask_restful import Api
 # app.config['SECRET_KEY']='123'
 
 db = SQLAlchemy()
-
-api = Api()
 
 principals = Principal()
 
@@ -62,14 +59,16 @@ login_manager = LoginManager()
 #认证加密程度
 login_manager.session_protection='strong'
 
+api = Api()
+
 # @login_manger.user_loader
 # def load_user(user_id):
 #     return User.query.get(int(user_id))
-'''
+
 blueprints = [
     'app.views.sample_view:auth',
 ]
-'''
+
 
 import app.database.models
 from app.views.joey_view import *
@@ -103,9 +102,9 @@ def create_app(config):
 
 
     # Load blueprints
-    # for bp_name in blueprints:
-    #     bp = import_string(bp_name)
-    #     app.register_blueprint(bp)
+    for bp_name in blueprints:
+        bp = import_string(bp_name)
+        app.register_blueprint(bp)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

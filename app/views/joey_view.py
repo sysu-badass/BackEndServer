@@ -2,10 +2,10 @@ from flask import Flask, current_app, request, session, redirect, url_for, abort
 from flask_login import LoginManager, login_user, logout_user, \
      login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, \
-     identity_changed
+     identity_changed, Permission
 from flask_restful import reqparse, abort, Api, Resource
 
-from app import login_manager, api
+from app import login_manager
 from app.database.dao import UserDao, OrderHistory, OrderHistoryItem, \
      Restaurant, Food, Order, OrderItem
 
@@ -63,7 +63,6 @@ class Customer_login(Resource):
 
 #顾客查看订单列表
 class Customer_orders(Resource):
-    @login_required
     def get(self, user_id, restaurant_id):
         identityPermission = Permission(UserNeed(user_id))
         if not identityPermission.can():
