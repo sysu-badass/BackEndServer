@@ -1,17 +1,20 @@
-from flask import Flask, current_app, request, session, redirect, url_for, abort
-from flask_login import LoginManager, login_user, logout_user, \
-     login_required, current_user
-from flask_principal import Principal, Identity, AnonymousIdentity, \
-     identity_changed
-from flask_restful import reqparse, abort, Api, Resource
+# from app.views.joey_view import Customer_login
+# from app.views.joey_view import Customer_menu
+# from app.views.joey_view import Customer_menu_food
+# from app.views.joey_view import Customer_orders
+# from app.views.joey_view import Customer_order
+# from app.views.joey_view import Customer_order_food
+# from app.views.joey_view import Customer_payment
+# from app.views.joey_view import admin_join
+# from app.views.joey_view import admin_login
+# from app.views.joey_view import admin_orders
+# from app.views.joey_view import admin_order
+# from app.views.joey_view import admin_order_food
+# from app.views.joey_view import admin_menu
+# from app.views.joey_view import admin_menu_food
 
-from app import login_manager
-from app.database.dao import UserDao, OrderHistory, OrderHistoryItem, \
-     Restaurant, Food, Order, OrderItem
 
-from app.service.joey_service import service
 
-from app.admin.admin import ModIdentityPermission
-from app.admin.admin import AccessUrlPermission
 
-api = Api()
+
+

@@ -41,8 +41,7 @@ from flask_principal import Principal
 from werkzeug.utils import import_string
 from app.admin.admin import iden_loaded
 from flask_principal import identity_loaded
-from app.views import api
-
+from flask_restful import reqparse, abort, Api, Resource
 
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root123456@localhost/rbac'
@@ -60,16 +59,19 @@ login_manager = LoginManager()
 #认证加密程度
 login_manager.session_protection='strong'
 
+api = Api()
+
 # @login_manger.user_loader
 # def load_user(user_id):
 #     return User.query.get(int(user_id))
-'''
+
 blueprints = [
     'app.views.sample_view:auth',
 ]
-'''
+
 
 import app.database.models
+from app.views.joey_view import *
 
 def create_app(config):
     app = Flask(__name__)

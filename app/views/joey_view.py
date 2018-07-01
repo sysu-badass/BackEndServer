@@ -2,7 +2,7 @@ from flask import Flask, current_app, request, session, redirect, url_for, abort
 from flask_login import LoginManager, login_user, logout_user, \
      login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, \
-     identity_changed
+     identity_changed, Permission
 from flask_restful import reqparse, abort, Api, Resource
 
 from app import login_manager
@@ -13,6 +13,7 @@ from app.service.joey_service import service
 
 from app.admin.admin import ModIdentityPermission
 from app.admin.admin import AccessUrlPermission
+from app.admin.admin import merchantPermission
 
 parser = reqparse.RequestParser()
 parser.add_argument('user_id')
@@ -63,6 +64,9 @@ class Customer_login(Resource):
 #顾客查看订单列表
 class Customer_orders(Resource):
     def get(self, user_id, restaurant_id):
+        identityPermission = Permission(UserNeed(user_id))
+        if not identityPermission.can():
+            abort(403)
         customer_orders = OrderHistoryDao.get_user_orders(user_id, restaurant_id)
         return {'orders': [customer_order.__json__ for customer_order in customer_orders]}, 200
 
@@ -163,12 +167,20 @@ class admin_login(Resource):
 
 #餐厅管理员操作餐厅订单列表
 class admin_orders(Resource):
+    @merchantPermission.require()
     def get(self, restaurant_id):
+        restaurantPermission = ModRestaurantPermission(restaurant_id)
+        if not restaurantPermission.can():
+            abort(403)
         restruant_orders = OrderDao.get_restaurant_orders(restaurant_id)
         return {'orders': [restaurant_orders.__json__ for restaurant_order in restaurant_orders]}, 200
 
     #一次可以创建一个order类，每次订单包含其中的order_item类
+    @merchantPermission.require()
     def post(self, restaurant_id):
+        restaurantPermission = ModRestaurantPermission(restaurant_id)
+        if not restaurantPermission.can():
+            abort(403)
         data = parser.parse_args()
         #orders是list类型的，里面的元素是orderItem
         order_items = data['order_items']

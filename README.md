@@ -40,9 +40,12 @@ We will use python + flask to achieve it.
   * views: restful api接口
       * sample_view.py: 演示view，实现登录，登出，edit
 
-# 服务器运行
+# 服务器部署运行
 ```sh
-python run.py
+./build app
+./build db
+docker swarm init
+./deploy.sh
 ```
 # 登录
 打开浏览器，访问（服务器ip：port/login）,比如在本地启动服务器，默认端口5000：  
