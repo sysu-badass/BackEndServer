@@ -17,8 +17,8 @@ from app import db
 class UserDao:
     @staticmethod
     #添加id作为参数
-    def add_user(id, password):
-        usr = User(id=id, password=password)
+    def add_user(id, username, password):
+        usr = User(id=id, username=username, password=password)
         db.session.add(usr)
 
     @staticmethod

@@ -6,14 +6,17 @@ from flask_principal import Principal, Identity, AnonymousIdentity, \
 from flask_restful import reqparse, abort, Api, Resource
 
 from app import login_manager
-from app.database.dao import UserDao, OrderHistory, OrderHistoryItem, \
-     Restaurant, Food, Order, OrderItem
+from app.database.dao import UserDao, OrderHistoryDao, OrderHistoryItemDao, \
+     RestaurantDao, FoodDao, OrderDao, OrderItemDao
 
 from app.service.joey_service import service
 
 from app.admin.admin import ModIdentityPermission
 from app.admin.admin import AccessUrlPermission
 from app.admin.admin import merchantPermission
+from app import db
+from app.database.dao_helper import DaoHelper
+import pdb
 
 parser = reqparse.RequestParser()
 parser.add_argument('user_id')
@@ -48,7 +51,9 @@ parser.add_argument('order_items')
 #顾客登录的话，如果数据库里没有相关账号密码，则创建一个
 class Customer_login(Resource):
     def post(self):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
+        #pdb.set_trace()
         customer = UserDao.get_user_by_id(data['user_id'])
         if customer != None:
             if service.hash_password_verify(data['user_password'], customer.password, customer.id):
@@ -59,6 +64,7 @@ class Customer_login(Resource):
             #加密密码，可用service.hash_password_verify(password, hash_password, account)认证
             password = service.hash_password(data['user_password'], data['user_id'])
             UserDao.add_user(data['user_id'], data['username'], password)
+            DaoHelper.commit(db)
             return {'URL': "/users/%d/%d/menu"%(data['user_id'], data['restaurant_id'])}, 200
 
 #顾客查看订单列表
@@ -97,7 +103,8 @@ class Customer_menu(Resource):
 #顾客查看菜单中菜品的信息
 class Customer_menu_food(Resource):
     def get(self, food_id, user_id):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         food = FoodDao.get_food_by_id(food_id)
         if food == None:
             return {"message": "No such food exists in this menu"}, 400
@@ -111,7 +118,8 @@ class Customer_payment(Resource):
         return {[{"URL": "example.com"}]}, 200
 
     def post(self, user_id):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         order = data['orders'][0]
         order_items = data['order_items']
         temp_item = {}
@@ -137,7 +145,8 @@ class Customer_payment(Resource):
 #餐厅管理员注册
 class admin_join(Resource):
     def post(self):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         admin = UserDao.get_user_by_id(data['restaurant_admin_id'])
         restaurant = RestaurantDao.get_restaurant_by_id(data['restaurant_id'])
         if admin != None:
@@ -157,7 +166,8 @@ class admin_join(Resource):
 #餐厅管理员登录
 class admin_login(Resource):
     def post(self):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         admin = UserDao.get_user_by_id(data['restaurant_admin_id'])
         if admin != None:
             if service.hash_password_verify(data['restaurant_admin_password'], admin.password, admn.id):
@@ -181,7 +191,8 @@ class admin_orders(Resource):
         restaurantPermission = ModRestaurantPermission(restaurant_id)
         if not restaurantPermission.can():
             abort(403)
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         #orders是list类型的，里面的元素是orderItem
         order_items = data['order_items']
         order = data['orders'][0]
@@ -203,7 +214,8 @@ class admin_orders(Resource):
         return {"URL": "/restaurants/%d/orders/%d"%(restaurant_id, order['order_id'])}, 200
 
     def delete(self, restaurant_id):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         order = data['orders'][0]
         if OrderDao.get_order(order['order_id']) == None:
             return {"message": "No such order %d exists"%(order['order_id'])}, 400
@@ -218,7 +230,8 @@ class admin_order(Resource):
         return {'order_items': [order_item.__json__ for order_item in order_items]}, 200
 
     def put(self, restaurant_id, order_id):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         order_items = data['order_items']
         for i in range(len(order_items)):
             order_item = OrderItemDao.get_order_item(order_items[i]['order_item_id'])
@@ -252,7 +265,8 @@ class admin_menu(Resource):
         return {'foods': [food.__json__ for food in foods]}, 200
 
     def post(self, restaurant_id):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         #foods是一个list类型，里面的元素是food_item的json
         foods = data['foods']
         for i in range(len(foods)):
@@ -270,7 +284,8 @@ class admin_menu(Resource):
 
     #传入的food只有一个元素
     def delete(self, restaurant_id):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         if FoodDao.get_food_by_id(data['foods']['food_id']) != None:
             FoodDao.del_food(data['foods']['food_id'])
             return 204
@@ -288,7 +303,8 @@ class admin_menu_food(Resource):
             return {'foods': [food.__json__]}, 200
 
     def put(self, restaurant_id, food_id):
-        data = parser.parse_args()
+        #data = parser.parse_args()
+        data = request.get_json(force = True)
         food = FoodDao.get_food_by_id(food_id)
         if food == None:
             food = data['foods'][0]
