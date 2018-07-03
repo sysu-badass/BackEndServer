@@ -19,7 +19,7 @@ role_permission = db.Table('role_permission',
 
 class User(db.Model, UserMixin):
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(45), primary_key=True)
     username = db.Column(db.String(45), nullable=False, unique=True)
     password = db.Column(db.String(45), nullable=False)
     phone_number = db.Column(db.String(45))
