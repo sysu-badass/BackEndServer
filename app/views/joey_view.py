@@ -18,6 +18,7 @@ from app import db
 from app.database.dao_helper import DaoHelper
 import pdb
 
+'''
 parser = reqparse.RequestParser()
 parser.add_argument('user_id')
 parser.add_argument('user_password')
@@ -46,7 +47,7 @@ parser.add_argument('order_id')
 parser.add_argument('orders')
 parser.add_argument('foods')
 parser.add_argument('order_items')
-
+'''
 
 #顾客登录的话，如果数据库里没有相关账号密码，则创建一个
 class Customer_login(Resource):
@@ -63,7 +64,7 @@ class Customer_login(Resource):
         else:
             #加密密码，可用service.hash_password_verify(password, hash_password, account)认证
             password = service.hash_password(data['user_password'], data['user_id'])
-            UserDao.add_user(data['user_id'], data['username'], password)
+            UserDao.add_user(data['user_id'], password)
             DaoHelper.commit(db)
             return {'URL': "/users/%d/%d/menu"%(data['user_id'], data['restaurant_id'])}, 200
 
