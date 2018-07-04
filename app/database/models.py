@@ -131,6 +131,18 @@ class Restaurant(db.Model):
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref='restaurants')
 
+    def __json__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "information": self.information,
+            "address": self.address,
+            "phone_number": self.phone_number,
+            "open_time": self.open_time,
+            "bulletin": self.bulletin,
+            "user_id": self.user_id
+        }
+
 class Food(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)

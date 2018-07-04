@@ -98,6 +98,7 @@ def create_app(config):
     api.add_resource(admin_order_food, '/restaurants/<restaurant_id>/orders/<order_id>/<food_id>')
     api.add_resource(admin_menu, '/restaurants/<restaurant_id>/menu')
     api.add_resource(admin_menu_food, '/restaurants/<restaurant_id>/menu/<food_id>')
+    api.add_resource(admin_settings, '/restaurants/<restaurant_id>/settings')
 
     api.init_app(app)
 
