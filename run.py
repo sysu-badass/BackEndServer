@@ -4,4 +4,4 @@ from config import config
 if __name__ == '__main__':  
     config_name = 'development'
     app = create_app(config[config_name])
-    app.run(host='0.0.0.0')
+    app.run(port=5500)

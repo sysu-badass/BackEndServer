@@ -46,8 +46,8 @@ def login():
 
     # Validate form input
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get('user_id')
+        password = request.form.get('user_password')
 
         #if form.validate_on_submit():
             # Retrieve the user from the hypothetical datastore
@@ -65,9 +65,9 @@ def login():
     return ''''' 
         <form action="#" method="POST"> 
             <span>请输入账号</span> 
-            <input type="text" name="username" id="username" placeholder="name"> 
+            <input type="text" name="user_id" id="user_id" placeholder="name"> 
             <span>请输入密码</span> 
-            <input type="password" name="password" id="pw" placeholder="password"> 
+            <input type="password" name="user_password" id="user_password" placeholder="password"> 
             <input type="submit" name="submit"> 
        </form> 
         '''
