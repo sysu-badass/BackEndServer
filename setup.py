@@ -10,7 +10,7 @@ app = create_app(config[config_name])
 
 db.create_all()
 print(db)
-user = User(username='lisi', password='123')
+user = User(id='lisi',username='lisi', password='123')
 role = Role(rolename='teacher')
 permission = Permission(url='/edit')
 
