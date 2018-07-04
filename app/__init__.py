@@ -82,7 +82,6 @@ def create_app(config):
     db.init_app(app)
     login_manager.init_app(app)
     principals.init_app(app)
-    api.init_app(app)
 
     #Add the restful resource to the URI
     api.add_resource(Customer_login, '/users/login')
@@ -100,6 +99,7 @@ def create_app(config):
     api.add_resource(admin_menu, '/restaurants/<restaurant_id>/menu')
     api.add_resource(admin_menu_food, '/restaurants/<restaurant_id>/menu/<food_id>')
 
+    api.init_app(app)
 
     # Load blueprints
     for bp_name in blueprints:
