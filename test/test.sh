@@ -42,8 +42,11 @@ curl -H "Content-Type: applicaton/json" -d '{"orders": [{"desk_number": 2,"total
 # Test admin_orders DELETE 成功
 curl -H "Content-Type: applicaton/json" -d '{"order_id": 1}' http://localhost:5000/restaurants/9527/orders -X DELETE
 
-# Test admin_order GET
+# Test admin_order GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/orders/3 -X GET
 
-# Test admin_order POST
+# Test admin_order PUT 成功
+curl -H "Content-Type: applicaton/json" -d '{"order_items": [{"number" : 20, "name": "臭豆腐", "price": 10, "description": "美味", "image": "/image/doufu.png"}, {"number" : 40,"name": "豆腐","price": 10,"description": "美味","image": "/image/doufu.png"}]}' http://localhost:5000/restaurants/9527/orders/4 -X PUT
 
-# Test admin_order DELETE
+# Test admin_order DELETE 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/orders/4 -X DELETE

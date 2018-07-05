@@ -259,14 +259,14 @@ class admin_orders(Resource):
                             order_items)
         DaoHelper.commit(db)
         #获得刚刚添加的订单被数据库分配的id
-        pdb.set_trace()
+        #pdb.set_trace()
         order_id = OrderDao.get_restaurant_orders(restaurant_id)[-1].id
         return {"URL": "/restaurants/%d/orders/%d"%(int(restaurant_id), order_id)}, 200
 
     def delete(self, restaurant_id):
         #data = parser.parse_args()
         data = request.get_json(force = True)
-        pdb.set_trace()
+        #pdb.set_trace()
         if OrderDao.get_order(data['order_id']) == None:
             return {"message": "No such order %d exists"%(data['order_id'])}, 400
         else:
@@ -284,22 +284,30 @@ class admin_order(Resource):
         #data = parser.parse_args()
         data = request.get_json(force = True)
         order_items = data['order_items']
+        #先把我们当前URL的order id的order_item选出来
+        #然后再从中选择出name相同的部分，不是None则更新，None则创建
         for i in range(len(order_items)):
-            order_item = OrderItemDao.get_order_item(order_items[i]['order_item_id'])
-            #如果提交的food的信息数据库里面有相同id，则更新它
+            for exist_item in OrderItemDao.get_order_items(int(order_id)):
+                if order_items[i]['name'] == exist_item.name:
+                    order_item = exist_item
+                    break
+            #如果提交的order_item的信息数据库里面有相同id，则更新它
             if order_item != None:
-                keys, values = service.get_keys_values(order_items[i])
-                OrderItemDao.update_order_item(foods[i]['food_id'], keys, values)
+                #keys, values = service.get_keys_values(order_items[i])
+                pdb.set_trace()
+                OrderItemDao.update_order_item(order_item.id, order_items[i])
             #如果没有则创建
             else:
-                OrderItemDao.add_order_item(order_items[i]['order_item_id'], order_items[i]['number'], order_items[i]['name'],
+                OrderItemDao.add_order_item(order_items[i]['number'], order_items[i]['name'],
                                 order_items[i]['description'], order_items[i]['image'],
-                                order_items[i]['price'], order_items[i]['order_id'])
-        return {"URL": "/restaurants/%d/orders/%d"%(restaurant_id, order_id)}, 200
+                                order_items[i]['price'], int(order_id))
+        DaoHelper.commit(db)
+        return {"URL": "/restaurants/%d/orders/%d"%(int(restaurant_id), int(order_id))}, 200
     #只能传入一个参数
     def delete(self, order_id, restaurant_id):
         if OrderDao.get_order(order_id) != None:
             OrderDao.del_order(order_id)
+            DaoHelper.commit(db)
             return 204
         else:
             return {"message": "The order item %d is not in the order"%(order_id)}, 400

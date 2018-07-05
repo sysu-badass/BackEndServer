@@ -260,6 +260,11 @@ class OrderItemDao:
         return order_item
 
     @staticmethod
+    def get_order_item_by_name(order_item_name):
+        order_item = OrderItem.query.filter_by(name=order_item_name).first()
+        return order_item
+
+    @staticmethod
     def get_order_items(order_id):
         order_items = OrderItem.query.filter_by(order_id=order_id).all()
         return order_items
@@ -273,9 +278,10 @@ class OrderItemDao:
         db.session.add(order)
 
     @staticmethod
-    def update_order_item(order_item_id, key, value):
+    def update_order_item(order_item_id, dict):
         order_item = OrderItemDao.get_order_item(order_item_id)
-        DaoHelper.update(order_item, key, value)
+        for key, value in dict.items():
+            DaoHelper.update(order_item, key, value)
 
     @staticmethod
     def del_order_item(order_item_id):
