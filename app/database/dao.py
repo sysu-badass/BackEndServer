@@ -205,9 +205,10 @@ class FoodDao:
         return foods
 
     @staticmethod
-    def update_food(food_id, key, value):
+    def update_food(food_id, dict):
         food = FoodDao.get_food_by_id(food_id)
-        DaoHelper.update(food, key, value)
+        for key, value in dict.items():
+            DaoHelper.update(food, key, value)
 
     @staticmethod
     def del_food(food_id):

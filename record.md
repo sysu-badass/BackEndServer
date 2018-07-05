@@ -11,6 +11,10 @@
 2. 找到一个bug，是在/restaurant/settings那里的put函数，由于put的data中没有'id'key,而直接data['id']调用不存在的key是会报错的，后来用has_key('id')来进行判断，预计后面应该也要进行类似的尝试
 3. json传递的只接受integer与string类型,因此像food类型中的available属性不可以直接为True,只能先以字符串POST到服务端，再转为bool类型
 4. 与前端交流过后，餐厅管理员无论是更新还是添加都是会将完整的、写于API设计中的json数据结构POST到服务端，因此可以暂时不用写判断是否需要排除掉不存在的数据的代码
+5. DaoHelper.update_food()有问题
 
 ## 尝试结果
-1. 虽然不是order类而是尝试food类，在/restaurant/menu中尝试向menu POST的数据中并没有food_id，但是数据库中仍然成功建立了数据库，不过也发现建立的id是从1、2、3等顺序开始往下排的，如果前面，如id为1的food被删除，那么数据库仍会继续递增id。总而言之，确定用户POST与GET的food、order、orderHistory是不同的，POST不用id，GET有id
+1. 虽然不是order类而是尝试food类，在/restaurant/menu中尝试向menu POST的数据中并没有food_id，但是数据库中仍然成功建立了数据库，不过也发现建立的id是从1、2、3等顺序开始往下排的，如果前面，如id为1的food被删除，那么数据库仍会继续递增id。总而言之，确定用户POST、Delete与GET的food、order、orderHistory是不同的，POST不用id，GET与Delete有id
+
+
+5. 发现DaoHelper.update_food()其实每次更新的都是一个key与一个value，而原来的代码显示的是key是list，value也是list，修改后就可以了

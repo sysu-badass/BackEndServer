@@ -55,7 +55,7 @@ print(b)
 
 ### pdb
 pdb是一个python内置的debug模块， [参考例子](https://pymotw.com/3/pdb/)
-**python3 -m pdb *.py**, 添加-m pdb参数即可运行pdb模块进行debug，在代码中import pdb，然后再在你所想要设置断点的地方写语句pdb.set_trace()
+**python3 -m pdb *.py**, 添加-m pdb参数即可运行pdb模块进行debug，在代码中import pdb，然后再在你所想要设置断点的地方写语句pdb.set_trace()。step指在break_point执行下一条语句，例如会跳到函数里面或者一直循环，而next则类似step，但不会跳入到循环或者函数里面，continue则是一直执行知道下个break_point或者程序结束
 
 
 ### Python Passlib
@@ -143,4 +143,4 @@ api.init_app(app)
 + cURL如果要post动态网址的话，只能通过shell脚本存储变量信息再将变量添加到URL中才可以
 
 ### pymysql
-+ [创建数据库的例子](https://pythontic.com/database/mysql/create%20database) 
++ [创建数据库的例子](https://pythontic.com/database/mysql/create%20database)

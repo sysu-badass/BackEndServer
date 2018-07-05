@@ -3,12 +3,12 @@ class DaoHelper:
     def update(obj, key, value):
         if (hasattr(obj, key)):
             setattr(obj, key, value)
-    
+
     @staticmethod
     def delete(db, obj):
         if (obj):
             db.session.delete(obj)
-    
+
     @staticmethod
     def commit(db):
         flag = True
@@ -18,7 +18,7 @@ class DaoHelper:
             db.session.rollback()
             flag = False
         return flag
-    
+
     # @staticmethod
     # def add_comit(db, obj):
     #     flag = True

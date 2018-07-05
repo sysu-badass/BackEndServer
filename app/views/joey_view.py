@@ -303,8 +303,8 @@ class admin_menu(Resource):
             #如果提交的food的信息数据库里面有相同id，则更新它
             if food != None:
                 foods[i]['available'] = service.str2bool(foods[i]['available'])
-                keys, values = service.get_keys_values(foods[i])
-                FoodDao.update_food(food.id, keys, values)
+                #keys, values = service.get_keys_values(foods[i])
+                FoodDao.update_food(food.id, foods[i])
             #如果没有则创建
             else:
                 FoodDao.add_food(foods[i]['name'], foods[i]['price'],
@@ -339,20 +339,29 @@ class admin_menu_food(Resource):
         #data = parser.parse_args()
         data = request.get_json(force = True)
         food = FoodDao.get_food_by_id(food_id)
+        #pdb.set_trace()
         if food == None:
+            #由于传进来的json是数组形式来存储数据的，所以需要index来检索
             food = data['foods'][0]
-            FoodDao.add_food(food['food_id'], food['name'], food['price'],
+            FoodDao.add_food(food['name'], food['price'],
                                 food['food_type'], food['description'],
-                                food['image'], food['available'], food['restaurant_id'])
+                                food['image'], service.str2bool(food['available']), food['restaurant_id'])
+            food_id = FoodDao.get_food_by_name(food['name']).id
         else:
-            keys, values = service.get_keys_values(data['foods'][0])
-            FoodDao.update_food(food, keys, values)
-        return {"URL": "/restaurants/%d/menu/%d"%(restaurant_id, food_id)}, 200
+            #food['available'] = service.str2bool(food['available'])
+            #keys, values = service.get_keys_values(data['foods'][0])
+            dict = data['foods'][0]
+            dict['available'] = service.str2bool(dict['available'])
+            FoodDao.update_food(int(food_id), dict)
+        #pdb.set_trace()
+        DaoHelper.commit(db)
+        return {"URL": "/restaurants/%d/menu/%d"%(int(restaurant_id), int(food_id))}, 200
 
 
     def delete(self, food_id, restaurant_id):
         if FoodDao.get_food_by_id(food_id) != None:
             FoodDao.del_food(food_id)
+            DaoHelper.commit(db)
             return 204
         else:
             return {"message": "The food %d is not in the menu"%(food_id)}, 400
