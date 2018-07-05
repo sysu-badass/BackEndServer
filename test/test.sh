@@ -50,3 +50,6 @@ curl -H "Content-Type: applicaton/json" -d '{"order_items": [{"number" : 20, "na
 
 # Test admin_order DELETE 成功
 curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/orders/4 -X DELETE
+
+# Test admin_order_food 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/orders/3/6 -X GET

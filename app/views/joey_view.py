@@ -305,17 +305,20 @@ class admin_order(Resource):
         return {"URL": "/restaurants/%d/orders/%d"%(int(restaurant_id), int(order_id))}, 200
     #只能传入一个参数
     def delete(self, order_id, restaurant_id):
-        if OrderDao.get_order(order_id) != None:
-            OrderDao.del_order(order_id)
+        if OrderDao.get_order(int(order_id)) != None:
+            OrderDao.del_order(int(order_id))
             DaoHelper.commit(db)
             return 204
         else:
-            return {"message": "The order item %d is not in the order"%(order_id)}, 400
+            return {"message": "The order %d is not in the order"%(int(order_id))}, 400
 
 #餐厅管理员操作餐厅订单中的菜品
 class admin_order_food(Resource):
-    def get(self, restaurant_id, food_id):
-        return {"URL": "/restaurants/%d/menu/%d"%(restaurant_id, food_id)}, 200
+    def get(self, restaurant_id, order_id, food_id):
+        food = FoodDao.get_food_by_id(food_id)
+        if food == None:
+            return {"message": "The food %d doesn't exist"%(int(food_id))}, 400
+        return {"URL": "/restaurants/%d/menu/%d"%(int(restaurant_id), int(food_id))}, 200
 
 #餐厅管理员操作餐厅菜单列表
 class admin_menu(Resource):

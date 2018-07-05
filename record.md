@@ -15,6 +15,7 @@
 6. 在admin_orders中，尝试添加order时，order_item是否可以自动添加order的id
 7. 在MySQL中调用语句select * from order;会说是SQL syntax error
 8. 在admin_orders中，发现delete失败，感觉有可能要连相关order_item也要一起删去
+9. 尝试在网址中添加中文
 
 ## 尝试结果
 1. 虽然不是order类而是尝试food类，在/restaurant/menu中尝试向menu POST的数据中并没有food_id，但是数据库中仍然成功建立了数据库，不过也发现建立的id是从1、2、3等顺序开始往下排的，如果前面，如id为1的food被删除，那么数据库仍会继续递增id。总而言之，确定用户POST、Delete与GET的food、order、orderHistory是不同的，POST不用id，GET与Delete有id
@@ -24,3 +25,4 @@
 6. 发现原来的代码append的是order_item类，但是我们只有初始的dictionary，所以还是要调用OrderItemDao来添加order_items
 7. order在MySQL中时关键字所以要转义具体[参考链接](https://blog.csdn.net/andyzhaojianhui/article/details/49586555)
 8. 猜想正确，需要先将所有的依赖删掉先
+9. 不可以，是bad request
