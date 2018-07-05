@@ -17,6 +17,7 @@ from app.admin.admin import merchantPermission
 from app import db
 from app.database.dao_helper import DaoHelper
 import pdb
+import datatime
 
 '''
 parser = reqparse.RequestParser()
@@ -181,12 +182,17 @@ class admin_login(Resource):
 
 #餐厅管理员管理餐厅设置信息
 class admin_settings(Resource):
+    def get(self, restaurant_id):
+        restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
+        return restaurant.__json__(), 200
+
     def put(self, restaurant_id):
         data = request.get_json(force = True)
+        #由于登录时会将餐厅的id POST到数据库中，所以一定可以得到restaurant
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
         #用于update restaurant数据库的字典
         dict = {}
-        pdb.set_trace()
+        #pdb.set_trace()
         for key, value in restaurant.__json__().items():
             #由于需要先登录才可以进行以下操作，所以可以确认restaurant_id是必定存在的
             if (key == 'id'):
@@ -200,31 +206,37 @@ class admin_settings(Resource):
             #数据库中的数据不是None，且data中对应的数据时None，则用回原来的数据
             else:
                 dict[key] = value
-        keys, values = service.get_keys_values(dict)
-        RestaurantDao.update_restaurant(restaurant_id, keys, values)
+        #keys, values = service.get_keys_values(dict)
+        RestaurantDao.update_restaurant(restaurant_id, dict)
+        DaoHelper.commit(db)
         return 204
 
 #餐厅管理员操作餐厅订单列表
 class admin_orders(Resource):
-    @merchantPermission.require()
+    #@merchantPermission.require()
     def get(self, restaurant_id):
+        '''
         restaurantPermission = ModRestaurantPermission(restaurant_id)
         if not restaurantPermission.can():
             abort(403)
+        '''
         restruant_orders = OrderDao.get_restaurant_orders(restaurant_id)
         return {'orders': [restaurant_orders.__json__() for restaurant_order in restaurant_orders]}, 200
 
     #一次可以创建一个order类，每次订单包含其中的order_item类
-    @merchantPermission.require()
+    #@merchantPermission.require()
     def post(self, restaurant_id):
+        '''
         restaurantPermission = ModRestaurantPermission(restaurant_id)
         if not restaurantPermission.can():
             abort(403)
+        '''
         #data = parser.parse_args()
         data = request.get_json(force = True)
         #orders是list类型的，里面的元素是orderItem
         order_items = data['order_items']
         order = data['orders'][0]
+        today = datetime.date.today()
         temp_item = {}
         items = []
         for i in order_items:

@@ -170,9 +170,10 @@ class RestaurantDao:
         return restaurants
 
     @staticmethod
-    def update_restaurant(restaurant_id, key, value):
+    def update_restaurant(restaurant_id, dict):
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
-        DaoHelper.update(restaurant, key, value)
+        for key, value in dict.items():
+            DaoHelper.update(restaurant, key, value)
 
     @staticmethod
     def del_restaurant(restaurant_id):

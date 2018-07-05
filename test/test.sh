@@ -9,7 +9,10 @@ curl -H "Content-Type: applicaton/json" -d '{"restaurant_id": 9527, "restaurant_
 # Test admin_login 成功
 curl -H "Content-Type: applicaton/json" -d '{"restaurant_admin_id": "123", "restaurant_admin_password": 1234, "restaurant_id": 9527}' http://localhost:5000/restaurants/login -X POST
 
-# Test admin_settings 失败
+# Test admin_settings GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/settings -X GET
+
+# Test admin_settings PUT 成功
 curl -H "Content-Type: applicaton/json" -d '{"name": "The fourth canteen","information": "SYSU Canteen","address": "GuangZhou","phone_number": "88888888","open_time": "8:00-20:00","bulletin": "Stop Today","user_id": "123"}' http://localhost:5000/restaurants/9527/settings -X PUT
 
 # Test admin_menu GET 成功
@@ -29,3 +32,16 @@ curl -H "Content-Type: applicaton/json" -d '{"foods": [{"name": "臭豆腐","pri
 
 # Test admin_menu_food DELETE 成功
 curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/menu/4 -X DELETE
+
+# Test admin_orders GET
+curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/orders -X GET
+
+# Test admin_orders POST
+
+# Test admin_orders DELETE
+
+# Test admin_order GET
+
+# Test admin_order POST
+
+# Test admin_order DELETE
