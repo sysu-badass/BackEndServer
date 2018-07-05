@@ -40,3 +40,8 @@ class service:
             keys.append(key)
             values.append(value)
         return (keys, values)
+
+    #将json数据中的true或者false字符串转成bool类型
+    @staticmethod
+    def str2bool(string):
+        return string.upper() == 'true'.upper()

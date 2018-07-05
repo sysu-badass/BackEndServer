@@ -150,19 +150,21 @@ class admin_join(Resource):
         data = request.get_json(force = True)
         admin = UserDao.get_user_by_id(data['restaurant_admin_id'])
         restaurant = RestaurantDao.get_restaurant_by_id(data['restaurant_id'])
+        #如果管理员已经存在于数据库，则返回400，不存在就添加到数据库
         if admin != None:
             return {"message": "This administrator already exists"}, 400
         password = service.hash_password(data['restaurant_admin_password'], data['restaurant_admin_id'])
-        UserDao.add_user(data['restaurant_admin_id'], data['restaurant_admin_password'])
+        UserDao.add_user(data['restaurant_admin_id'], password)
         #如果餐厅的ID不存在，则创建一个
         if restaurant == None:
             RestaurantDao.add_restaurant(data['restaurant_id'], data['restaurant_admin_id'])
-            DaoHelper.commit(db)
         else:
             #更新餐厅的资料
             key = ['id', 'name', 'information', 'user_id']
             value = [data['restaurant_id'], data['restaurant_name'], data['restaurant_information'], data['restaurant_admin_id']]
             RestaurantDao.update_restaurant(data['restaurant_id'], key, value)
+        #将所有的修改从ORM添加到实体数据库中
+        DaoHelper.commit(db)
         return {'URL': '/restaurants/%d/menu'%(data['restaurant_id'])}, 200
 
 #餐厅管理员登录
@@ -171,11 +173,36 @@ class admin_login(Resource):
         #data = parser.parse_args()
         data = request.get_json(force = True)
         admin = UserDao.get_user_by_id(data['restaurant_admin_id'])
-        if admin != None:
-            if service.hash_password_verify(data['restaurant_admin_password'], admin.password, admn.id):
-                return {'URL': "/restaurants/%d/menu"%(data['restaurant_id'])}, 200
+        #管理员存在且密码验证正确，则返回餐厅的菜单界面
+        if (admin != None) and (service.hash_password_verify(data['restaurant_admin_password'], admin.password, admin.id)):
+            return {'URL': "/restaurants/%d/menu"%(data['restaurant_id'])}, 200
         return {'message': 'Login error'}, 400
 
+
+#餐厅管理员管理餐厅设置信息
+class admin_settings(Resource):
+    def put(self, restaurant_id):
+        data = request.get_json(force = True)
+        restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
+        #用于update restaurant数据库的字典
+        dict = {}
+        pdb.set_trace()
+        for key, value in restaurant.__json__().items():
+            #由于需要先登录才可以进行以下操作，所以可以确认restaurant_id是必定存在的
+            if (key == 'id'):
+                continue
+            #当数据库中的数据是None时，无论data中对应的数据是否为None都更新
+            if (value == None):
+                dict[key] = data[key]
+            #虽然数据库中的数据不是None，但是data中对应的数据存在，所以更新
+            elif (data[key] != None):
+                dict[key] = data[key]
+            #数据库中的数据不是None，且data中对应的数据时None，则用回原来的数据
+            else:
+                dict[key] = value
+        keys, values = service.get_keys_values(dict)
+        RestaurantDao.update_restaurant(restaurant_id, keys, values)
+        return 204
 
 #餐厅管理员操作餐厅订单列表
 class admin_orders(Resource):
@@ -275,24 +302,27 @@ class admin_menu(Resource):
             food = FoodDao.get_food_by_id(foods[i]['food_id'])
             #如果提交的food的信息数据库里面有相同id，则更新它
             if food != None:
+                foods[i]['available'] = service.str2bool(foods[i]['available'])
                 keys, values = service.get_keys_values(foods[i])
                 FoodDao.update_food(foods[i]['food_id'], keys, values)
             #如果没有则创建
             else:
                 FoodDao.add_food(foods[i]['food_id'], foods[i]['name'], foods[i]['price'],
                                 foods[i]['food_type'], foods[i]['description'],
-                                foods[i]['image'], foods[i]['available'], foods[i]['restaurant_id'])
+                                foods[i]['image'], service.str2bool(foods[i]['available']), foods[i]['restaurant_id'])
+        DaoHelper.commit(db)
         return {'URL': "/restaurants/%d/menu/%d"%(foods[0]['restaurant_id'], foods[0]['food_id'])}, 200
 
     #传入的food只有一个元素
     def delete(self, restaurant_id):
         #data = parser.parse_args()
         data = request.get_json(force = True)
-        if FoodDao.get_food_by_id(data['foods']['food_id']) != None:
-            FoodDao.del_food(data['foods']['food_id'])
+        if FoodDao.get_food_by_id(data['foods'][0]['food_id']) != None:
+            FoodDao.del_food(data['foods'][0]['food_id'])
+            DaoHelper.commit(db)
             return 204
         else:
-            return {"message": "The food %d is not in the menu"%(data['foods']['food_id'])}, 400
+            return {"message": "The food %d is not in the menu"%(data['foods'][0]['food_id'])}, 400
 
 
 #餐厅管理员操作餐厅菜单中的菜品
@@ -325,24 +355,3 @@ class admin_menu_food(Resource):
             return 204
         else:
             return {"message": "The food %d is not in the menu"%(food_id)}, 400
-
-#餐厅管理员管理餐厅设置信息
-class admin_settings(Resource):
-    def post(self, restaurant_id):
-        data = request.get_json(force = True)
-        restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
-        #用于update restaurant数据库的字典
-        dict = {}
-        for key, value in restaurant.__json__().items():
-            #当数据库中的数据是None时，无论data中对应的数据是否为None都更新
-            if (value == None):
-                dict[key] = data[key]
-            #虽然数据库中的数据不是None，但是data中对应的数据存在，所以更新
-            elif (data[key] != None):
-                dict[key] = data[key]
-            #数据库中的数据不是None，且data中对应的数据时None，则用回原来的数据
-            else:
-                dict[key] = value
-        keys, values = service.get_keys_values(dict)
-        RestaurantDao.update_restaurant(restaurant_id, keys, values)
-        return 204

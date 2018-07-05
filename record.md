@@ -8,3 +8,6 @@
 ## 尝试
 
 * 要尝试一下将order_id作为None传入数据库中，看看数据库是否会自动赋值
+* 找到一个bug，是在/restaurant/settings那里的put函数，由于put的data中没有'id'key,而直接data['id']调用不存在的key是会报错的，后来用has_key('id')来进行判断，预计后面应该也要进行类似的尝试
+* json传递的只接受integer与string类型,因此像food类型中的available属性不可以直接为True,只能先以字符串POST到服务端，再转为bool类型
+* 与前端交流过后，餐厅管理员无论是更新还是添加都是会将完整的、写于API设计中的json数据结构POST到服务端，因此可以暂时不用写判断是否需要排除掉不存在的数据的代码

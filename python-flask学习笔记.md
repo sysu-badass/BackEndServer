@@ -130,6 +130,8 @@ api.init_app(app)
 + 在mysql中，source /path/*.sql 可以导入sql建立数据库。
 + SHOW COLUMNS FROM [TABLE_NAME] FROM [DATABASE_NAME] 可以展示talbe的column属性
 + DROP [DATABASE_NAME] 可以删除database。
++ delete [row] from [table] where [condition] 是删除数据库的语法
++ 创建数据库需要设置为UTF-8，[具体链接](https://dba.stackexchange.com/questions/76788/create-a-database-with-charset-utf-8) ,调用命令：**CREATE DATABASE rbac CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;**。查看全局character set性质的[参考链接](https://makandracards.com/makandra/2529-show-and-change-mysql-default-character-set)。查看具体的数据库，tables等character set性质的[参考链接](https://stackoverflow.com/questions/1049728/how-do-i-see-what-character-set-a-mysql-database-table-column-is)
 
 ### cURL
 在本次实验中，我发现网上大部分教程都是用cURL进行后台的测试与调试，以下是我记录的一些简单的用法
@@ -138,3 +140,7 @@ api.init_app(app)
 + **curl http://localhost:5000/todos/todo2 -X DELETE** delete的例子
 + **curl http://localhost:5000/todos -d "task=something new" -X POST** POST的例子
 + [使用curl传送json文件格式的语法](https://stackoverflow.com/questions/7172784/how-to-post-json-data-with-curl-from-terminal-commandline-to-test-spring-rest)
++ cURL如果要post动态网址的话，只能通过shell脚本存储变量信息再将变量添加到URL中才可以
+
+### pymysql
++ [创建数据库的例子](https://pythontic.com/database/mysql/create%20database) 

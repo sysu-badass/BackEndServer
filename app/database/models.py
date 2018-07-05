@@ -117,7 +117,7 @@ class Restaurant(db.Model):
     # 店名
     name = db.Column(db.String(45))
     # 简介
-    infomation = db.Column(db.String(150))
+    information = db.Column(db.String(150))
     # 地址
     address = db.Column(db.String(150))
     # 手机号

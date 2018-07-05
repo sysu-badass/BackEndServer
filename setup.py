@@ -4,6 +4,7 @@ from app.database.models import Role
 from app.database.models import Permission
 from app import create_app
 from config import config
+import pymysql
 
 config_name = 'development'
 app = create_app(config[config_name])
@@ -19,6 +20,3 @@ user.roles.append(role)
 
 db.session.add(user)
 db.session.commit()
-
-
-
