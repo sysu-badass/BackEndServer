@@ -182,9 +182,9 @@ class RestaurantDao:
 #Add id as argument to add_food
 class FoodDao:
     @staticmethod
-    def add_food(id, name, price, food_type,
+    def add_food(name, price, food_type,
             description, image, available, restaurant_id):
-        food = Food(id=id, name=name, price=price, food_type=food_type,
+        food = Food(name=name, price=price, food_type=food_type,
                 description=description, image=image, available=available,
                 restaurant_id=restaurant_id)
         db.session.add(food)

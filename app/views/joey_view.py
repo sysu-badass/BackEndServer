@@ -299,19 +299,20 @@ class admin_menu(Resource):
         #foods是一个list类型，里面的元素是food_item的json
         foods = data['foods']
         for i in range(len(foods)):
-            food = FoodDao.get_food_by_id(foods[i]['food_id'])
+            food = FoodDao.get_food_by_name(foods[i]['name'])
             #如果提交的food的信息数据库里面有相同id，则更新它
             if food != None:
                 foods[i]['available'] = service.str2bool(foods[i]['available'])
                 keys, values = service.get_keys_values(foods[i])
-                FoodDao.update_food(foods[i]['food_id'], keys, values)
+                FoodDao.update_food(food.id, keys, values)
             #如果没有则创建
             else:
-                FoodDao.add_food(foods[i]['food_id'], foods[i]['name'], foods[i]['price'],
+                FoodDao.add_food(foods[i]['name'], foods[i]['price'],
                                 foods[i]['food_type'], foods[i]['description'],
                                 foods[i]['image'], service.str2bool(foods[i]['available']), foods[i]['restaurant_id'])
         DaoHelper.commit(db)
-        return {'URL': "/restaurants/%d/menu/%d"%(foods[0]['restaurant_id'], foods[0]['food_id'])}, 200
+        food = FoodDao.get_food_by_name(foods[i]['name'])
+        return {'URL': "/restaurants/%d/menu/%d"%(food.restaurant_id, food.id)}, 200
 
     #传入的food只有一个元素
     def delete(self, restaurant_id):

@@ -16,7 +16,7 @@ curl -H "Content-Type: applicaton/json" -d '{"name": "The fourth canteen","infor
 curl -H "Content-Type: applicaton/json" -d '{"restaurant_id": 9527}' http://localhost:5000/restaurants/9527/menu -X GET
 
 #Test admin_menu POST
-curl -H "Content-Type: applicaton/json" -d '{"foods": [{"food_id": 1,"name": "豆腐","price": 10,"food_type": "素食","description": "美味","image": "/image/doufu.png","available": "True","restaurant_id": 9527}]}' http://localhost:5000/restaurants/9527/menu -X POST
+curl -H "Content-Type: applicaton/json" -d '{"foods": [{"name": "豆腐","price": 10,"food_type": "素食","description": "美味","image": "/image/doufu.png","available": "True","restaurant_id": 9527}]}' http://localhost:5000/restaurants/9527/menu -X POST
 
 #Test admin_menu DELETE
 curl -H "Content-Type: applicaton/json" -d '{"foods": [{"food_id": 1,"name": "豆腐","price": 10,"food_type": "素食","description": "美味","image": "/image/doufu.png","available": "True","restaurant_id": 9527}]}' http://localhost:5000/restaurants/9527/menu -X DELETE
