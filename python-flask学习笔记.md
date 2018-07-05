@@ -9,6 +9,7 @@
 + 要运行Flask程序，需要以下命令，在Linux环境下，我们需要告诉系统Flask app是哪一个文件。先**export FLASK_APP = main.py**，再**flask run**。这里的main.py文件指的是我们的程序实例，里面有视图函数以及路由等信息。
 + 若想进入debug模式，需要 **app.run(debug=True)** 在app.run()函数里面添加参数debug，然后需要命令**export FLASK_DEBUG=1**，之后在运行命令 **flask run** 即可
 + [Blueprint()函数的解析](https://stackoverflow.com/questions/24420857/what-are-flask-blueprints-exactly)
++ **request.get_json(force = True)** 返回的是dict 类
 
 
 

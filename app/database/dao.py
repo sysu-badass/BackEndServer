@@ -219,12 +219,18 @@ class FoodDao:
 #add id to add_order()
 class OrderDao:
     @staticmethod
-    def add_order(id, date, desk_number, total_price, restaurant_id, order_items):
-        order = Order(id=id, date=date, desk_number=desk_number,
+    def add_order(date, desk_number, total_price, restaurant_id, order_items):
+        order = Order(date=date, desk_number=desk_number,
                     total_price=total_price, restaurant_id=restaurant_id)
-        for item in order_items:
-            order.order_items.append(item)
         db.session.add(order)
+        #获得最新的订单的id，因为它的id是递增的，所以最后一个是最新的
+        order_id = OrderDao.get_restaurant_orders(restaurant_id)[-1].id
+        #根据传进来的order_item数据创建order_item类
+        for item in order_items:
+            OrderItemDao.add_order_item(item['number'], item['name'],
+                                        item['description'], item['image'],
+                                        item['price'], order_id)
+
 
     @staticmethod
     def get_order(id):
@@ -232,13 +238,18 @@ class OrderDao:
         return order
 
     @staticmethod
-    def get_restaurant_orders(self,restaurant_id):
+    def get_restaurant_orders(restaurant_id):
         orders = Order.query.filter_by(restaurant_id=restaurant_id).all()
         return orders
 
     @staticmethod
     def del_order(order_id):
         order = OrderDao.get_order(order_id)
+        #获得order中的相关的所有order_item
+        order_items = OrderItemDao.get_order_items(order_id)
+        #删除所有相关的order_item
+        for order_item in order_items:
+            OrderItemDao.del_order_item(order_item.id)
         DaoHelper.delete(db, order)
 
 #Create OrderIrem class
@@ -254,9 +265,9 @@ class OrderItemDao:
         return order_items
 
     @staticmethod
-    def add_order_item(id, number, name,
+    def add_order_item(number, name,
                             description, image, price, order__id):
-        order = OrderItem(id=id, number=number, name=name,
+        order = OrderItem(number=number, name=name,
                         description=description, image=image,
                         price=price, order_id=order__id)
         db.session.add(order)
@@ -267,8 +278,8 @@ class OrderItemDao:
         DaoHelper.update(order_item, key, value)
 
     @staticmethod
-    def del_order_item(order_id, order_item_id):
-        order = OrderDao.get_order_item(hitory_id, history_item_id)
+    def del_order_item(order_item_id):
+        order = OrderItemDao.get_order_item(order_item_id)
         DaoHelper.delete(db, order)
 
 

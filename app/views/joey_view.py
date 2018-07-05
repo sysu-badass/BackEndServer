@@ -17,7 +17,7 @@ from app.admin.admin import merchantPermission
 from app import db
 from app.database.dao_helper import DaoHelper
 import pdb
-import datatime
+import datetime
 
 '''
 parser = reqparse.RequestParser()
@@ -220,8 +220,10 @@ class admin_orders(Resource):
         if not restaurantPermission.can():
             abort(403)
         '''
-        restruant_orders = OrderDao.get_restaurant_orders(restaurant_id)
-        return {'orders': [restaurant_orders.__json__() for restaurant_order in restaurant_orders]}, 200
+        #pdb.set_trace()
+        restaurant_orders = OrderDao.get_restaurant_orders(int(restaurant_id))
+        array = [restaurant_order.__json__() for restaurant_order in restaurant_orders]
+        return {'orders': array}, 200
 
     #一次可以创建一个order类，每次订单包含其中的order_item类
     #@merchantPermission.require()
@@ -236,32 +238,40 @@ class admin_orders(Resource):
         #orders是list类型的，里面的元素是orderItem
         order_items = data['order_items']
         order = data['orders'][0]
+        #订单的日期，year-month-day
         today = datetime.date.today()
+        #转化成string形式
+        date = str(today)
+        '''
         temp_item = {}
         items = []
         for i in order_items:
-            temp_item['id'] = i['order_item_id']
             temp_item['number'] = i['number']
             temp_item['name'] = i['name']
             temp_item['description'] = i['description']
             temp_item['image'] = i['image']
             temp_item['price'] = i['price']
-            temp_item['order_id'] = i['order_id']
             items.append(temp_item.copy())
         order_items = items
-        OrderDao.add_order(order['food_id'], order['date'],
-                            order['desk_number'], order['total_price'],
-                            order['restaurant_id'], order_items)
-        return {"URL": "/restaurants/%d/orders/%d"%(restaurant_id, order['order_id'])}, 200
+        '''
+        OrderDao.add_order(date, order['desk_number'],
+                            order['total_price'], order['restaurant_id'],
+                            order_items)
+        DaoHelper.commit(db)
+        #获得刚刚添加的订单被数据库分配的id
+        pdb.set_trace()
+        order_id = OrderDao.get_restaurant_orders(restaurant_id)[-1].id
+        return {"URL": "/restaurants/%d/orders/%d"%(int(restaurant_id), order_id)}, 200
 
     def delete(self, restaurant_id):
         #data = parser.parse_args()
         data = request.get_json(force = True)
-        order = data['orders'][0]
-        if OrderDao.get_order(order['order_id']) == None:
-            return {"message": "No such order %d exists"%(order['order_id'])}, 400
+        pdb.set_trace()
+        if OrderDao.get_order(data['order_id']) == None:
+            return {"message": "No such order %d exists"%(data['order_id'])}, 400
         else:
-            OrderDao.del_order(order['order_id'])
+            OrderDao.del_order(data['order_id'])
+            DaoHelper.commit(db)
             return 204
 
 #餐厅管理员操作餐厅订单
