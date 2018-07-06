@@ -9,7 +9,7 @@ ModIdentityNeed = partial(IdentityNeed, 'mod')
 
 class ModIdentityPermission(Permission):
     def __init__(self, username):
-        need = ModIdentityNeed(username)
+        need = ModIdentityNeed(str(username))
         super(ModIdentityPermission, self).__init__(need)
 
 RestaurantNeed = namedtuple('restaurant', ['method', 'value'])
@@ -17,7 +17,7 @@ ModRestaurantNeed = partial(RestaurantNeed, 'modRestaurantNeed')
 
 class ModRestaurantPermission(Permission):
     def __init__(self, id):
-        need = ModRestaurantNeed(id)
+        need = ModRestaurantNeed(str(id))
         super(ModRestaurantPermission, self).__init__(need)
 
 UrlNeed = namedtuple('url', ['method', 'value'])
@@ -25,7 +25,7 @@ AccessUrlNeed = partial(UrlNeed, 'accessUrl')
 
 class AccessUrlPermission(Permission):
     def __init__(self, url):
-        need = AccessUrlNeed(url)
+        need = AccessUrlNeed(str(url))
         super(AccessUrlPermission, self).__init__(need)
 
 foodNeed = namedtuple('food', ['method', 'value'])
@@ -33,7 +33,7 @@ AccessFoodNeed = partial(foodNeed, 'accessFood')
 
 class AccessFoodPermission(Permission):
     def __init__(self, url):
-        need = AccessFoodNeed(url)
+        need = AccessFoodNeed(str(url))
         super(AccessFoodPermission, self).__init__(need)
 
 orderNeed = namedtuple('order', ['method', 'value'])
@@ -41,32 +41,32 @@ AccessOrderNeed = partial(orderNeed, 'accessFood')
 
 class AccessOrderPermission(Permission):
     def __init__(self, url):
-        need = AccessOrderNeed(url)
+        need = AccessOrderNeed(str(url))
         super(AccessOrderPermission, self).__init__(need)
 
-merchantPermission = Permission(RoleNeed('merchant'))
-adminPermission = Permission(RoleNeed('admin'))
+merchant = Permission(RoleNeed('merchant'))
+administrator = Permission(RoleNeed('admin'))
 
 def iden_loaded(sender, identity):
     identity.user = current_user
 
     if hasattr(current_user, 'id'):
-        identity.provides.add(UserNeed(current_user.id))
+        identity.provides.add(UserNeed(str(current_user.id)))
 
     if hasattr(current_user, 'roles'):
         for role in current_user.roles:
-            identity.provides.add(RoleNeed(role.rolename))
+            identity.provides.add(RoleNeed(str(role.rolename)))
             if hasattr(role, 'permissions'):
                 print('3')
                 for permission in role.permissions:
-                    identity.provides.add(AccessUrlNeed(permission.url))
+                    identity.provides.add(AccessUrlNeed(str(permission.url)))
 
     if hasattr(current_user, 'username'):
-        identity.provides.add(ModIdentityNeed(current_user.username))
+        identity.provides.add(ModIdentityNeed(str(current_user.username)))
     
     if hasattr(current_user, 'restaurants'):
         for restaurant in current_user.restaurants:
-            identity.provides.add(ModRestaurantNeed(current_user.restaurants.id))
+            identity.provides.add(ModRestaurantNeed(str(restaurant.id)))
 
 
 

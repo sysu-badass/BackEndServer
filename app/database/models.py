@@ -4,7 +4,7 @@ from app import db
 
 
 user_role = db.Table('user_role',
-    db.Column('user_id', db.Integer,
+    db.Column('user_id', db.String(45),
         db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True),
     db.Column('role_id', db.Integer,
         db.ForeignKey('role.id', ondelete='CASCADE'), primary_key=True)
@@ -19,8 +19,8 @@ role_permission = db.Table('role_permission',
 
 class User(db.Model, UserMixin):
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(45), nullable=False, unique=True)
+    id = db.Column(db.String(45), primary_key=True)
+    username = db.Column(db.String(45))
     password = db.Column(db.String(45), nullable=False)
     phone_number = db.Column(db.String(45))
     image = db.Column(db.String(45))
@@ -57,7 +57,7 @@ class OrderHistory(db.Model):
     desk_number = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     restaurant_id = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer,
+    user_id = db.Column(db.String(45),
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref='order_histories')
 
@@ -105,7 +105,7 @@ class Comment(db.Model):
 
     restaurant_id = db.Column(db.Integer,
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
-    user_id = db.Column(db.Integer,
+    user_id = db.Column(db.String(45),
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 
     user = db.relationship('User', backref='comments')
@@ -114,12 +114,34 @@ class Comment(db.Model):
 class Restaurant(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(45), nullable=False)
-    infomation = db.Column(db.String(150))
+    # 店名
+    name = db.Column(db.String(45))
+    # 简介
+    information = db.Column(db.String(150))
+    # 地址
+    address = db.Column(db.String(150))
+    # 手机号
+    phone_number = db.Column(db.String(32))
+    # 营业时间
+    open_time = db.Column(db.String(50))
+    # 店铺公告
+    bulletin = db.Column(db.String(150))
 
-    user_id = db.Column(db.Integer,
+    user_id = db.Column(db.String(45),
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref='restaurants')
+
+    def __json__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "information": self.information,
+            "address": self.address,
+            "phone_number": self.phone_number,
+            "open_time": self.open_time,
+            "bulletin": self.bulletin,
+            "user_id": self.user_id
+        }
 
 class Food(db.Model):
 
