@@ -1,3 +1,4 @@
+mkdir data
 cp ./deploy/docker-compose.yml .
 # docker swarm init
 docker stack deploy -c docker-compose.yml eorder
