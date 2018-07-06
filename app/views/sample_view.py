@@ -18,21 +18,7 @@ auth = Blueprint('auth', __name__, url_prefix='')
 
 from app.database.models import User
 
-@login_manager.user_loader
-def load_user(userid):
-    # Return an instance of the User model
-    return UserDao.get_user_by_id(userid)
 
-@login_manager.request_loader
-def request_loader(request):
-    username = request.form.get('username')
-    user = UserDao.get_user(username)
-
-    # DO NOT ever store passwords in plaintext and always compare password
-    # hashes using constant-time comparison!
-    # user.is_authenticated = request.form['password'] == user.password
-
-    return user
 
 @auth.route('/protected')
 @login_required

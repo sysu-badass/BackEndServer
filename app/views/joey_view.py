@@ -2,7 +2,7 @@ from flask import Flask, current_app, request, session, redirect, url_for, abort
 from flask_login import LoginManager, login_user, logout_user, \
      login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, \
-     identity_changed, Permission
+     identity_changed, Permission, UserNeed
 from flask_restful import reqparse, abort, Api, Resource
 
 from app import login_manager
@@ -13,7 +13,7 @@ from app.service.joey_service import service
 
 from app.admin.admin import ModIdentityPermission
 from app.admin.admin import AccessUrlPermission
-from app.admin.admin import merchantPermission
+from app.admin.admin import ModRestaurantPermission
 from app import db
 from app.database.dao_helper import DaoHelper
 import pdb
@@ -50,6 +50,22 @@ parser.add_argument('foods')
 parser.add_argument('order_items')
 '''
 
+@login_manager.user_loader
+def load_user(userid):
+    # Return an instance of the User model
+    return UserDao.get_user_by_id(userid)
+
+@login_manager.request_loader
+def request_loader(request):
+    username = request.form.get('username')
+    user = UserDao.get_user(username)
+
+    # DO NOT ever store passwords in plaintext and always compare password
+    # hashes using constant-time comparison!
+    # user.is_authenticated = request.form['password'] == user.password
+
+    return user
+
 #顾客登录的话，如果数据库里没有相关账号密码，则创建一个
 class Customer_login(Resource):
     def post(self):
@@ -59,6 +75,10 @@ class Customer_login(Resource):
         customer = UserDao.get_user_by_id(data['user_id'])
         if customer != None:
             if service.hash_password_verify(data['user_password'], customer.password, customer.id):
+                login_user(customer)
+                identity_changed.send(current_app._get_current_object(),
+                                    identity=Identity(customer.id))
+
                 return {'URL': "/users/%d/%d/menu"%(int(customer.id), data['restaurant_id'])}, 200
             else:
                 return {'message': 'login error'}, 400
@@ -67,28 +87,44 @@ class Customer_login(Resource):
             password = service.hash_password(data['user_password'], data['user_id'])
             UserDao.add_user(data['user_id'], password)
             DaoHelper.commit(db)
+
+            customer = UserDao.get_user_by_id(data['user_id'])
+            login_user(customer)
+            identity_changed.send(current_app._get_current_object(),
+                                    identity=Identity(customer.id))
             return {'URL': "/users/%d/%d/menu"%(int(data['user_id']), data['restaurant_id'])}, 200
 
 #顾客查看订单列表
 class Customer_orders(Resource):
+    @login_required
     def get(self, user_id, restaurant_id):
-        '''
+        
         identityPermission = Permission(UserNeed(user_id))
         if not identityPermission.can():
             abort(403)
-        '''
+        
         customer_orders = OrderHistoryDao.get_user_orders(user_id, int(restaurant_id))
         return {'orders': [customer_order.__json__() for customer_order in customer_orders]}, 200
 
 #顾客查看订单
 class Customer_order(Resource):
+    @login_required
     def get(self, user_id, restaurant_id, order_id):
+        identityPermission = Permission(UserNeed(user_id))
+        if not identityPermission.can():
+            abort(403)
+
         customer_order_items = OrderHistoryItemDao.get_order_history_items(int(order_id))
         return {'order_items': [customer_order_item.__json__() for customer_order_item in customer_order_items]}, 200
 
 #顾客查看订单中的菜品的信息
 class Customer_order_food(Resource):
+    @login_required
     def get(self, user_id, restaurant_id, order_id, food_id):
+        identityPermission = Permission(UserNeed(user_id))
+        if not identityPermission.can():
+            abort(403)
+
         customer_order_items = OrderHistoryItemDao.get_order_history_items(int(order_id))
         for customer_order_item in customer_order_items:
             food = FoodDao.get_food_by_name(customer_order_item.name)
@@ -118,8 +154,12 @@ class Customer_menu_food(Resource):
 class Customer_payment(Resource):
     def get(self, restaurant_id, user_id):
         return {"URL": ["example.com"]}, 200
-
+    @login_required
     def post(self, restaurant_id, user_id):
+        identityPermission = Permission(UserNeed(user_id))
+        if not identityPermission.can():
+            abort(403)
+
         #data = parser.parse_args()
         data = request.get_json(force = True)
         order = data['orders'][0]
@@ -180,17 +220,34 @@ class admin_login(Resource):
         admin = UserDao.get_user_by_id(data['restaurant_admin_id'])
         #管理员存在且密码验证正确，则返回餐厅的菜单界面
         if (admin != None) and (service.hash_password_verify(data['restaurant_admin_password'], admin.password, admin.id)):
+            login_user(admin)
+            identity_changed.send(current_app._get_current_object(),
+                                    identity=Identity(admin.id))
+
             return {'URL': "/restaurants/%d/menu"%(data['restaurant_id'])}, 200
         return {'message': 'Login error'}, 400
 
 
 #餐厅管理员管理餐厅设置信息
 class admin_settings(Resource):
+    @login_required
     def get(self, restaurant_id):
+        print(type(restaurant_id))
+        
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        print(ownerPermission.can())
+        if not ownerPermission.can():
+            abort(403)
+
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
         return restaurant.__json__(), 200
 
+    @login_required
     def put(self, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         data = request.get_json(force = True)
         #由于登录时会将餐厅的id POST到数据库中，所以一定可以得到restaurant
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
@@ -217,13 +274,12 @@ class admin_settings(Resource):
 
 #餐厅管理员操作餐厅订单列表
 class admin_orders(Resource):
-    #@merchantPermission.require()
+    @login_required
     def get(self, restaurant_id):
-        '''
-        restaurantPermission = ModRestaurantPermission(restaurant_id)
-        if not restaurantPermission.can():
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
             abort(403)
-        '''
+
         #pdb.set_trace()
         restaurant_orders = OrderDao.get_restaurant_orders(int(restaurant_id))
         array = [restaurant_order.__json__() for restaurant_order in restaurant_orders]
@@ -231,12 +287,12 @@ class admin_orders(Resource):
 
     #一次可以创建一个order类，每次订单包含其中的order_item类
     #@merchantPermission.require()
+    @login_required
     def post(self, restaurant_id):
-        '''
-        restaurantPermission = ModRestaurantPermission(restaurant_id)
-        if not restaurantPermission.can():
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
             abort(403)
-        '''
+
         #data = parser.parse_args()
         data = request.get_json(force = True)
         #orders是list类型的，里面的元素是orderItem
@@ -267,7 +323,12 @@ class admin_orders(Resource):
         order_id = OrderDao.get_restaurant_orders(restaurant_id)[-1].id
         return {"URL": "/restaurants/%d/orders/%d"%(int(restaurant_id), order_id)}, 200
 
+    @login_required
     def delete(self, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         #data = parser.parse_args()
         data = request.get_json(force = True)
         #pdb.set_trace()
@@ -280,11 +341,21 @@ class admin_orders(Resource):
 
 #餐厅管理员操作餐厅订单
 class admin_order(Resource):
+    @login_required
     def get(self, order_id, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         order_items = OrderItemDao.get_order_items(order_id)
         return {'order_items': [order_item.__json__() for order_item in order_items]}, 200
 
+    @login_required
     def put(self, restaurant_id, order_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         #data = parser.parse_args()
         data = request.get_json(force = True)
         order_items = data['order_items']
@@ -308,7 +379,12 @@ class admin_order(Resource):
         DaoHelper.commit(db)
         return {"URL": "/restaurants/%d/orders/%d"%(int(restaurant_id), int(order_id))}, 200
     #只能传入一个参数
+    @login_required
     def delete(self, order_id, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         if OrderDao.get_order(int(order_id)) != None:
             OrderDao.del_order(int(order_id))
             DaoHelper.commit(db)
@@ -318,7 +394,12 @@ class admin_order(Resource):
 
 #餐厅管理员操作餐厅订单中的菜品
 class admin_order_food(Resource):
+    @login_required
     def get(self, restaurant_id, order_id, food_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         food = FoodDao.get_food_by_id(food_id)
         if food == None:
             return {"message": "The food %d doesn't exist"%(int(food_id))}, 400
@@ -326,11 +407,21 @@ class admin_order_food(Resource):
 
 #餐厅管理员操作餐厅菜单列表
 class admin_menu(Resource):
+    @login_required
     def get(self, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         foods = FoodDao.get_foods(restaurant_id)
         return {'foods': [food.__json__() for food in foods]}, 200
 
+    @login_required
     def post(self, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         #data = parser.parse_args()
         data = request.get_json(force = True)
         #foods是一个list类型，里面的元素是food_item的json
@@ -352,7 +443,12 @@ class admin_menu(Resource):
         return {'URL': "/restaurants/%d/menu/%d"%(food.restaurant_id, food.id)}, 200
 
     #传入的food只有一个元素
+    @login_required
     def delete(self, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         #data = parser.parse_args()
         data = request.get_json(force = True)
         if FoodDao.get_food_by_id(data['foods'][0]['food_id']) != None:
@@ -365,14 +461,24 @@ class admin_menu(Resource):
 
 #餐厅管理员操作餐厅菜单中的菜品
 class admin_menu_food(Resource):
+    @login_required
     def get(self, food_id, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         food = FoodDao.get_food_by_id(food_id)
         if food == None:
             return {"message": "No such food exists in this menu"}, 400
         else:
             return {'foods': [food.__json__()]}, 200
 
+    @login_required
     def put(self, restaurant_id, food_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         #data = parser.parse_args()
         data = request.get_json(force = True)
         food = FoodDao.get_food_by_id(food_id)
@@ -394,8 +500,12 @@ class admin_menu_food(Resource):
         DaoHelper.commit(db)
         return {"URL": "/restaurants/%d/menu/%d"%(int(restaurant_id), int(food_id))}, 200
 
-
+    @login_required
     def delete(self, food_id, restaurant_id):
+        ownerPermission = ModRestaurantPermission(restaurant_id)
+        if not ownerPermission.can():
+            abort(403)
+
         if FoodDao.get_food_by_id(food_id) != None:
             FoodDao.del_food(food_id)
             DaoHelper.commit(db)
