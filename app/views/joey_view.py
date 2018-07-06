@@ -59,7 +59,7 @@ class Customer_login(Resource):
         customer = UserDao.get_user_by_id(data['user_id'])
         if customer != None:
             if service.hash_password_verify(data['user_password'], customer.password, customer.id):
-                return {'URL': "/users/%s/%s/menu"%(customer.id, data['restaurant_id'])}, 200
+                return {'URL': "/users/%d/%d/menu"%(int(customer.id), data['restaurant_id'])}, 200
             else:
                 return {'message': 'login error'}, 400
         else:
@@ -67,32 +67,32 @@ class Customer_login(Resource):
             password = service.hash_password(data['user_password'], data['user_id'])
             UserDao.add_user(data['user_id'], password)
             DaoHelper.commit(db)
-            return {'URL': "/users/%s/%s/menu"%(data['user_id'], data['restaurant_id'])}, 200
+            return {'URL': "/users/%d/%d/menu"%(int(data['user_id']), data['restaurant_id'])}, 200
 
 #顾客查看订单列表
 class Customer_orders(Resource):
     def get(self, user_id, restaurant_id):
+        '''
         identityPermission = Permission(UserNeed(user_id))
         if not identityPermission.can():
             abort(403)
-        customer_orders = OrderHistoryDao.get_user_orders(user_id, restaurant_id)
+        '''
+        customer_orders = OrderHistoryDao.get_user_orders(user_id, int(restaurant_id))
         return {'orders': [customer_order.__json__() for customer_order in customer_orders]}, 200
 
 #顾客查看订单
 class Customer_order(Resource):
-    def get(self, order_id, user_id):
-        customer_order_items = OrderHistoryItemDao.get_order_history_items(order_id)
-        if customer_order_items == None:
-            return {'message': "No such order exists"}, 400
+    def get(self, user_id, restaurant_id, order_id):
+        customer_order_items = OrderHistoryItemDao.get_order_history_items(int(order_id))
         return {'order_items': [customer_order_item.__json__() for customer_order_item in customer_order_items]}, 200
 
 #顾客查看订单中的菜品的信息
 class Customer_order_food(Resource):
-    def get(self, order_id, food_id, user_id):
-        customer_order_items = OrderHistoryItemDao.get_order_history_items(order_id)
+    def get(self, user_id, restaurant_id, order_id, food_id):
+        customer_order_items = OrderHistoryItemDao.get_order_history_items(int(order_id))
         for customer_order_item in customer_order_items:
             food = FoodDao.get_food_by_name(customer_order_item.name)
-            if (food != None) and (food.id == food_id):
+            if (food != None) and (food.id == int(food_id)):
                 return {'foods': [food.__json__()]}, 200
         return {'message': "No such food exists in this order"}, 400
 
@@ -104,29 +104,29 @@ class Customer_menu(Resource):
 
 #顾客查看菜单中菜品的信息
 class Customer_menu_food(Resource):
-    def get(self, food_id, user_id):
+    def get(self, user_id, restaurant_id, food_id):
         #data = parser.parse_args()
-        data = request.get_json(force = True)
-        food = FoodDao.get_food_by_id(food_id)
+        food = FoodDao.get_food_by_id(int(food_id))
+        #pdb.set_trace()
         if food == None:
-            return {"message": "No such food exists in this menu"}, 400
+            return {"message": "No such food %d exists in this menu"%(int(food_id))}, 400
         else:
             return {'foods': [food.__json__()]}, 200
 
 
 #返回支付方法对应的网站,这是一个json数组类型
 class Customer_payment(Resource):
-    def get(self, user_id):
-        return {[{"URL": "example.com"}]}, 200
+    def get(self, restaurant_id, user_id):
+        return {"URL": ["example.com"]}, 200
 
-    def post(self, user_id):
+    def post(self, restaurant_id, user_id):
         #data = parser.parse_args()
         data = request.get_json(force = True)
         order = data['orders'][0]
         order_items = data['order_items']
-        temp_item = {}
-        items = []
+        today = datetime.datetime.now()
         #将request里面的json key转化为数据库model的key
+        '''
         for i in order_items:
             temp_item['id'] = i['order_history_item_id']
             temp_item['number'] = i['number']
@@ -137,12 +137,16 @@ class Customer_payment(Resource):
             temp_item['order_history_id'] = i['order_history_id']
             items.append(temp_item.copy())
         order_items = items
-        OrderHitoryDao.add_order_history(order['order_history_id'], order['date'],
-                                        order['desk_number'], order['total_price'],
+        '''
+        #用户自身的订单记录
+        OrderHistoryDao.add_order_history(today, order['desk_number'], order['total_price'],
                                         order['restaurant_id'], order['user_id'], order_items)
+        #同时要发送到餐厅的订单记录
+        OrderDao.add_order(today, order['desk_number'],
+                            order['total_price'], order['restaurant_id'],
+                            order_items)
+        DaoHelper.commit(db)
         return 204
-
-
 
 #餐厅管理员注册
 class admin_join(Resource):
@@ -239,9 +243,9 @@ class admin_orders(Resource):
         order_items = data['order_items']
         order = data['orders'][0]
         #订单的日期，year-month-day
-        today = datetime.date.today()
+        today = datetime.datetime.now()
         #转化成string形式
-        date = str(today)
+        #date = str(today)
         '''
         temp_item = {}
         items = []
@@ -254,7 +258,7 @@ class admin_orders(Resource):
             items.append(temp_item.copy())
         order_items = items
         '''
-        OrderDao.add_order(date, order['desk_number'],
+        OrderDao.add_order(today, order['desk_number'],
                             order['total_price'], order['restaurant_id'],
                             order_items)
         DaoHelper.commit(db)

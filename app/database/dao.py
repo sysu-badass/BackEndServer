@@ -78,14 +78,19 @@ class OrderHistoryDao:
         return orders
 
     @staticmethod
-    def add_order_history(id, date, desk_number, total_price,
+    def add_order_history(date, desk_number, total_price,
                         restaurant_id, user_id, order_history_items):
-        order = OrderHistory(id=id, date=date, desk_number=desk_number,
+        order = OrderHistory(date=date, desk_number=desk_number,
                         total_price=total_price, restaurant_id=restaurant_id,
                         user_id=user_id)
-        for order_history_item in order_history_items:
-            order.order_history_items.append(order_history_item)
         db.session.add(order)
+        order_id = OrderHistoryDao.get_user_orders(user_id, restaurant_id)[-1].id
+        for item in order_history_items:
+            OrderHistoryItemDao.add_order_history_item(item['number'], item['name'],
+                                        item['description'], item['image'],
+                                        item['price'], order_id)
+
+
 
     @staticmethod
     def del_order_history(order_id):
@@ -105,9 +110,9 @@ class OrderHistoryItemDao:
         return order_items
 
     @staticmethod
-    def add_order_history_item(id, number, name,
+    def add_order_history_item(number, name,
                             description, image, price, order_history_id):
-        order = OrderHistoryItem(id=id, number=number, name=name,
+        order = OrderHistoryItem(number=number, name=name,
                         description=description, image=image,
                         price=price, order_history_id=order_history_id)
         db.session.add(order)
@@ -118,9 +123,10 @@ class OrderHistoryItemDao:
         DaoHelper.delete(db, order)
 
     @staticmethod
-    def update_order_history_item(order_history_item_id, key, value):
+    def update_order_history_item(order_history_item_id, dict):
         order_history_item = OrderHistoryItemDao.get_order_item(order_history_item_id)
-        DaoHelper.update(order_history_item, key, value)
+        for key, value in dict.items():
+            DaoHelper.update(order_history_item, key, value)
 
 
 class CommentDao:

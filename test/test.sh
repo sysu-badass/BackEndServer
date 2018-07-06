@@ -3,6 +3,27 @@
 # Test customer login 成功
 curl -H "Content-Type: applicaton/json" -d '{"user_id": "3062", "username": "Jack", "user_password": "123456", "restaurant_id": 9527}' http://localhost:5000/users/login -X POST
 
+# Test customer_orders GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/users/3062/9527/orders -X GET
+
+# Test customer_order GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/users/3062/9527/orders/2 -X GET
+
+# Test customer_order_food GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/users/3062/9527/orders/2/6 -X GET
+
+# Test customer menu GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/users/3062/9527/menu -X GET
+
+# Test customer menu food GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/users/3062/9527/menu/6 -X GET
+
+# Test customer payment GET 成功
+curl -H "Content-Type: applicaton/json" http://localhost:5000/users/3062/9527/payment -X GET
+
+# Test customer payment POST 成功
+curl -H "Content-Type: applicaton/json" -d '{"orders": [{"desk_number": 2,"total_price": 123.4,"restaurant_id": 9527, "user_id": "3062"}], "order_items": [{"number" : 2,"name": "豆腐","price": 10,"description": "美味","image": "/image/doufu.png"}]}' http://localhost:5000/users/3062/9527/payment -X POST
+
 # Test admin_join 成功
 curl -H "Content-Type: applicaton/json" -d '{"restaurant_id": 9527, "restaurant_admin_id": '123', "restaurant_admin_password": 1234, "restaurant_name": "Eorder", "restaurant_information": "小吃店"}' http://localhost:5000/restaurants/join -X POST
 
