@@ -26,6 +26,7 @@ curl -H "Content-Type: applicaton/json" -d '{"orders": [{"desk_number": 2,"total
 
 # Test admin_join 成功
 curl -H "Content-Type: applicaton/json" -d '{"restaurant_id": 9527, "restaurant_admin_id": '123', "restaurant_admin_password": 1234, "restaurant_name": "Eorder", "restaurant_information": "小吃店"}' http://localhost:5000/restaurants/join -X POST
+
 # Test admin_login 成功
 curl -H "Content-Type: applicaton/json" -d '{"restaurant_admin_id": "123", "restaurant_admin_password": 1234, "restaurant_id": 9527}' http://localhost:5000/restaurants/login -X POST  --cookie-jar cookie_file.txt
 
