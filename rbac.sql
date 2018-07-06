@@ -16,7 +16,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 CREATE SCHEMA IF NOT EXISTS `rbac` DEFAULT CHARACTER SET utf8 ;
-USE `rbac` ;
+USE `rbac`;
 
 --
 -- Table structure for table `comment`
@@ -32,7 +32,7 @@ CREATE TABLE `comment` (
   `text` varchar(150) DEFAULT NULL,
   `image` varchar(45) DEFAULT NULL,
   `restaurant_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `user_id` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `restaurant_id` (`restaurant_id`),
   KEY `user_id` (`user_id`),
@@ -122,7 +122,7 @@ CREATE TABLE `order_history` (
   `desk_number` int(11) NOT NULL,
   `total_price` float NOT NULL,
   `restaurant_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `user_id` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `order_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
@@ -232,9 +232,13 @@ DROP TABLE IF EXISTS `restaurant`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `restaurant` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) NOT NULL,
-  `infomation` varchar(150) DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `information` varchar(150) DEFAULT NULL,
+  `address` varchar(150) DEFAULT NULL,
+  `phone_number` varchar(32) DEFAULT NULL,
+  `open_time` varchar(50) DEFAULT NULL,
+  `bulletin` varchar(150) DEFAULT NULL,
+  `user_id` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `restaurant_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
@@ -310,14 +314,13 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(45) NOT NULL,
+  `id` varchar(45) NOT NULL,
+  `username` varchar(45) DEFAULT NULL,
   `password` varchar(45) NOT NULL,
   `phone_number` varchar(45) DEFAULT NULL,
   `image` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,7 +329,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'lisi','123',NULL,NULL);
+INSERT INTO `user` VALUES ('lisi','lisi','123',NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -338,7 +341,7 @@ DROP TABLE IF EXISTS `user_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_role` (
-  `user_id` int(11) NOT NULL,
+  `user_id` varchar(45) NOT NULL,
   `role_id` int(11) NOT NULL,
   PRIMARY KEY (`user_id`,`role_id`),
   KEY `role_id` (`role_id`),
@@ -353,7 +356,7 @@ CREATE TABLE `user_role` (
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
-INSERT INTO `user_role` VALUES (1,1);
+INSERT INTO `user_role` VALUES ('lisi',1);
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -366,4 +369,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-06-30 20:34:46
+-- Dump completed on 2018-07-06 16:06:02
