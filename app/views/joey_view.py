@@ -429,12 +429,15 @@ class admin_menu(Resource):
         for i in range(len(foods)):
             food = FoodDao.get_food_by_name(foods[i]['name'])
             #如果提交的food的信息数据库里面有相同id，则更新它
+            pdb.set_trace()
             if food != None:
+                pdb.set_trace()
                 foods[i]['available'] = service.str2bool(foods[i]['available'])
                 #keys, values = service.get_keys_values(foods[i])
                 FoodDao.update_food(food.id, foods[i])
             #如果没有则创建
             else:
+                pdb.set_trace()
                 FoodDao.add_food(foods[i]['name'], foods[i]['price'],
                                 foods[i]['food_type'], foods[i]['description'],
                                 foods[i]['image'], service.str2bool(foods[i]['available']), foods[i]['restaurant_id'])
