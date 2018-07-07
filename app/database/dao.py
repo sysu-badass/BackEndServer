@@ -225,9 +225,9 @@ class FoodDao:
 #add id to add_order()
 class OrderDao:
     @staticmethod
-    def add_order(date, desk_number, total_price, restaurant_id, order_items):
+    def add_order(date, desk_number, total_price, status, restaurant_id, order_items):
         order = Order(date=date, desk_number=desk_number,
-                    total_price=total_price, restaurant_id=restaurant_id)
+                    total_price=total_price, status=status,restaurant_id=restaurant_id)
         db.session.add(order)
         #获得最新的订单的id，因为它的id是递增的，所以最后一个是最新的
         order_id = OrderDao.get_restaurant_orders(restaurant_id)[-1].id

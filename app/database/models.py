@@ -56,6 +56,7 @@ class OrderHistory(db.Model):
     date = db.Column(db.DateTime)
     desk_number = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
+    #status = db.Column(db.String(45), nullable=False)
     restaurant_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.String(45),
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
@@ -67,6 +68,7 @@ class OrderHistory(db.Model):
             "date": str(self.date),
             "desk_number": self.desk_number,
             "total_price": self.total_price,
+            #"status": self.status,
             "restaurant_id": self.restaurant_id,
             "user_id": self.user_id
         }
@@ -173,6 +175,7 @@ class Order(db.Model):
     date = db.Column(db.DateTime)
     desk_number = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(45), nullable=False)
     restaurant_id = db.Column(db.Integer,
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
     restaurant = db.relationship('Restaurant', backref='orders')
@@ -183,6 +186,7 @@ class Order(db.Model):
             "date": str(self.date),
             "desk_number": self.desk_number,
             "total_price": self.total_price,
+            "status": self.status,
             "restaurant_id": self.restaurant_id
         }
 
