@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(45))
     password = db.Column(db.String(45), nullable=False)
     phone_number = db.Column(db.String(45))
-    image = db.Column(db.String(45))
+    image = db.Column(db.String(150))
 
     roles = db.relationship('Role', secondary='user_role',
                             backref = db.backref('users'))
@@ -77,7 +77,7 @@ class OrderHistoryItem(db.Model):
     number = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(45), nullable=False)
     description = db.Column(db.String(150))
-    image = db.Column(db.String(45))
+    image = db.Column(db.String(150))
     price = db.Column(db.Float, nullable=False)
 
     order_history_id = db.Column(db.Integer,
@@ -101,7 +101,7 @@ class Comment(db.Model):
     name = db.Column(db.String(45), nullable=False)
     star = db.Column(db.Integer, nullable=False)
     text = db.Column(db.String(150))
-    image = db.Column(db.String(45))
+    image = db.Column(db.String(150))
 
     restaurant_id = db.Column(db.Integer,
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
@@ -133,16 +133,13 @@ class Restaurant(db.Model):
 
     def __json__(self):
         return {
-            "id": self.id,
             "name": self.name,
             "information": self.information,
             "address": self.address,
             "phone_number": self.phone_number,
             "open_time": self.open_time,
-            "bulletin": self.bulletin,
-            "user_id": self.user_id
+            "bulletin": self.bulletin
         }
-
 class Food(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -150,7 +147,7 @@ class Food(db.Model):
     price = db.Column(db.Float, nullable=False)
     food_type = db.Column(db.String(45), nullable=False)
     description = db.Column(db.String(150))
-    image = db.Column(db.String(45))
+    image = db.Column(db.String(150))
     available = db.Column(db.Boolean, nullable=False)
 
     restaurant_id = db.Column(db.Integer,
@@ -195,7 +192,7 @@ class OrderItem(db.Model):
     number = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(45), nullable=False)
     description = db.Column(db.String(150))
-    image = db.Column(db.String(45))
+    image = db.Column(db.String(150))
     price = db.Column(db.Float, nullable=False)
 
     order_id = db.Column(db.Integer,

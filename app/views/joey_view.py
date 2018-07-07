@@ -98,11 +98,11 @@ class Customer_login(Resource):
 class Customer_orders(Resource):
     @login_required
     def get(self, user_id, restaurant_id):
-        
+
         identityPermission = Permission(UserNeed(user_id))
         if not identityPermission.can():
             abort(403)
-        
+
         customer_orders = OrderHistoryDao.get_user_orders(user_id, int(restaurant_id))
         return {'orders': [customer_order.__json__() for customer_order in customer_orders]}, 200
 
@@ -233,7 +233,7 @@ class admin_settings(Resource):
     @login_required
     def get(self, restaurant_id):
         print(type(restaurant_id))
-        
+
         ownerPermission = ModRestaurantPermission(restaurant_id)
         print(ownerPermission.can())
         if not ownerPermission.can():

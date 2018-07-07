@@ -8,9 +8,9 @@ class Config:
         pass
 
 class DevelopmentConfig(Config):
-    # 'mysql+pymysql://root:root123456@db/rbac' 
+    # 'mysql+pymysql://root:root123456@db/rbac'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URI') or\
-            'mysql+pymysql://root:root123456@db/rbac' 
+            'mysql+pymysql://root:root123456@localhost/rbac' 
 
 class TestingConfig(Config):
     TESTING = False
