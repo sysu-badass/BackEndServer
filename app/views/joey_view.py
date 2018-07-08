@@ -153,8 +153,7 @@ class Customer_menu_food(Resource):
 #返回支付方法对应的网站,这是一个json数组类型
 class Customer_payment(Resource):
     def get(self, restaurant_id, user_id):
-        return {"payments": [{"URL": "example.com"}]}, 200
-
+        return {"URL": ["example.com"]}, 200
     @login_required
     def post(self, restaurant_id, user_id):
         identityPermission = Permission(UserNeed(user_id))
@@ -164,7 +163,6 @@ class Customer_payment(Resource):
         #data = parser.parse_args()
         data = request.get_json(force = True)
         order = data['orders'][0]
-        order['status'] = "new"
         order_items = data['order_items']
         today = datetime.datetime.now()
         #将request里面的json key转化为数据库model的key
@@ -184,8 +182,8 @@ class Customer_payment(Resource):
         OrderHistoryDao.add_order_history(today, order['desk_number'], order['total_price'],
                                         order['restaurant_id'], order['user_id'], order_items)
         #同时要发送到餐厅的订单记录
-        OrderDao.add_order(today, order['desk_number'], order['total_price'],
-                            order['status'], order['restaurant_id'],
+        OrderDao.add_order(today, order['desk_number'],
+                            order['total_price'], order['restaurant_id'],
                             order_items)
         DaoHelper.commit(db)
         return 204
@@ -300,26 +298,11 @@ class admin_orders(Resource):
         #orders是list类型的，里面的元素是orderItem
         order_items = data['order_items']
         order = data['orders'][0]
-        order['status'] = "new"
-        #订单的日期，year-month-day
+        #订单的日期，year-month-day hour-minute-second
         today = datetime.datetime.now()
         #转化成string形式
-        #date = str(today)
-        '''
-        temp_item = {}
-        items = []
-        for i in order_items:
-            temp_item['number'] = i['number']
-            temp_item['name'] = i['name']
-            temp_item['description'] = i['description']
-            temp_item['image'] = i['image']
-            temp_item['price'] = i['price']
-            items.append(temp_item.copy())
-        order_items = items
-        '''
         OrderDao.add_order(today, order['desk_number'], order['total_price'],
-                            order['status'], order['restaurant_id'],
-                            order_items)
+                            order['status'], order['restaurant_id'], order_items)
         DaoHelper.commit(db)
         #获得刚刚添加的订单被数据库分配的id
         #pdb.set_trace()
@@ -362,6 +345,7 @@ class admin_order(Resource):
         #data = parser.parse_args()
         data = request.get_json(force = True)
         order_items = data['order_items']
+        order_item = None
         #先把我们当前URL的order id的order_item选出来
         #然后再从中选择出name相同的部分，不是None则更新，None则创建
         for i in range(len(order_items)):
@@ -372,7 +356,6 @@ class admin_order(Resource):
             #如果提交的order_item的信息数据库里面有相同id，则更新它
             if order_item != None:
                 #keys, values = service.get_keys_values(order_items[i])
-                #pdb.set_trace()
                 OrderItemDao.update_order_item(order_item.id, order_items[i])
             #如果没有则创建
             else:
@@ -443,7 +426,7 @@ class admin_menu(Resource):
                                 foods[i]['food_type'], foods[i]['description'],
                                 foods[i]['image'], service.str2bool(foods[i]['available']), foods[i]['restaurant_id'])
         DaoHelper.commit(db)
-        food = FoodDao.get_food_by_name(foods[0]['name'])
+        food = FoodDao.get_food_by_name(foods[i]['name'])
         return {'URL': "/restaurants/%d/menu/%d"%(food.restaurant_id, food.id)}, 200
 
     #传入的food只有一个元素
