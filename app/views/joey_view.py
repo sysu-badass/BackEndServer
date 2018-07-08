@@ -301,8 +301,12 @@ class admin_orders(Resource):
         #订单的日期，year-month-day hour-minute-second
         today = datetime.datetime.now()
         #转化成string形式
-        OrderDao.add_order(today, order['desk_number'], order['total_price'],
-                            order['status'], order['restaurant_id'], order_items)
+        #pdb.set_trace()
+        if (order['order_id'] == None):
+            OrderDao.add_order(today, order['desk_number'], order['total_price'],
+                                order['status'], order['restaurant_id'], order_items)
+        else:
+            OrderDao.update_order(order['order_id'], order)
         DaoHelper.commit(db)
         #获得刚刚添加的订单被数据库分配的id
         #pdb.set_trace()

@@ -58,7 +58,7 @@ curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/m
 curl -H "Content-Type: applicaton/json" http://localhost:5000/restaurants/9527/orders -X GET --cookie cookie_file.txt
 
 # Test admin_orders POST 成功
-curl -H "Content-Type: applicaton/json" -d '{"orders": [{"desk_number": 2,"total_price": 123.4, "status": "new", "restaurant_id": 9527}], "order_items": [{"number" : 2,"name": "豆腐","price": 10,"description": "美味","image": "/image/doufu.png"}]}' http://localhost:5000/restaurants/9527/orders -X POST --cookie cookie_file.txt
+curl -H "Content-Type: applicaton/json" -d '{"orders": [{"order_id": null, "desk_number": 2,"total_price": 123.4, "status": "new", "restaurant_id": 9527}], "order_items": [{"number" : 2,"name": "豆腐","price": 10,"description": "美味","image": "/image/doufu.png"}]}' http://localhost:5000/restaurants/9527/orders -X POST --cookie cookie_file.txt
 
 # Test admin_orders DELETE 成功
 curl -H "Content-Type: applicaton/json" -d '{"order_id": 1}' http://localhost:5000/restaurants/9527/orders -X DELETE --cookie cookie_file.txt

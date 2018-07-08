@@ -249,6 +249,14 @@ class OrderDao:
         return orders
 
     @staticmethod
+    def update_order(id, dict):
+        order = OrderDao.get_order(id)
+        #只能更新order自身的信息，order_item的更新要到其子URL下
+        for key, value in dict.items():
+            DaoHelper.update(order, key, value)
+
+
+    @staticmethod
     def del_order(order_id):
         order = OrderDao.get_order(order_id)
         #获得order中的相关的所有order_item
