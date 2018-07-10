@@ -52,11 +52,11 @@ class Permission(db.Model):
 
 class OrderHistory(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     date = db.Column(db.DateTime)
     desk_number = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
-    restaurant_id = db.Column(db.Integer, nullable=False)
+    restaurant_id = db.Column(db.BigInteger, nullable=False)
     user_id = db.Column(db.String(45),
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref='order_histories')
@@ -73,14 +73,14 @@ class OrderHistory(db.Model):
 
 class OrderHistoryItem(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     number = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(45), nullable=False)
     description = db.Column(db.String(150))
     image = db.Column(db.String(150))
     price = db.Column(db.Float, nullable=False)
 
-    order_history_id = db.Column(db.Integer,
+    order_history_id = db.Column(db.BigInteger,
         db.ForeignKey('order_history.id', ondelete='CASCADE'), nullable=False)
     order_history = db.relationship('OrderHistory', backref='order_history_items')
 
@@ -103,7 +103,7 @@ class Comment(db.Model):
     text = db.Column(db.String(150))
     image = db.Column(db.String(150))
 
-    restaurant_id = db.Column(db.Integer,
+    restaurant_id = db.Column(db.BigInteger,
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.String(45),
         db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
@@ -113,7 +113,7 @@ class Comment(db.Model):
 
 class Restaurant(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     # 店名
     name = db.Column(db.String(45))
     # 简介
@@ -142,7 +142,7 @@ class Restaurant(db.Model):
         }
 class Food(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(45), nullable=False)
     price = db.Column(db.Float, nullable=False)
     food_type = db.Column(db.String(45), nullable=False)
@@ -150,7 +150,7 @@ class Food(db.Model):
     image = db.Column(db.String(150))
     available = db.Column(db.Boolean, nullable=False)
 
-    restaurant_id = db.Column(db.Integer,
+    restaurant_id = db.Column(db.BigInteger,
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
     restaurant = db.relationship('Restaurant', backref='foods')
 
@@ -169,12 +169,12 @@ class Food(db.Model):
 
 class Order(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     date = db.Column(db.DateTime)
     desk_number = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(45), nullable=False)
-    restaurant_id = db.Column(db.Integer,
+    restaurant_id = db.Column(db.BigInteger,
         db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
     restaurant = db.relationship('Restaurant', backref='orders')
 
@@ -190,14 +190,14 @@ class Order(db.Model):
 
 class OrderItem(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     number = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(45), nullable=False)
     description = db.Column(db.String(150))
     image = db.Column(db.String(150))
     price = db.Column(db.Float, nullable=False)
 
-    order_id = db.Column(db.Integer,
+    order_id = db.Column(db.BigInteger,
         db.ForeignKey('order.id', ondelete='CASCADE'), nullable=False)
     order = db.relationship('Order', backref='order_items')
 
