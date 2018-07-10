@@ -186,7 +186,6 @@ class RestaurantDao:
         restaurant = RestaurantDao.get_restaurant_by_id(restaurant_id)
         DaoHelper.delete(db, restaurant)
 
-#Add id as argument to add_food
 class FoodDao:
     @staticmethod
     def add_food(name, price, food_type,
