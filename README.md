@@ -17,10 +17,10 @@ We will use python + flask to achieve it.
 │   ├── __init__.py
 │   ├── service
 │   │   ├── __init__.py
-│   │   └── sample_service.py
+│   │   └── joey_service.py
 │   └── views
 │       ├── __init__.py
-│       └── sample_view.py
+│       └── joey_view.py
 ├── config.py
 ├── README.md
 ├── requirements.txt
@@ -38,7 +38,7 @@ We will use python + flask to achieve it.
      * dao_helper.py: crud操作的辅助模块
   * service: 业务包，实现对外提供的服务
   * views: restful api接口
-      * sample_view.py: 演示view，实现登录，登出，edit
+      * joey_view.py: 演示view，实现登录，登出，edit
 
 # 服务器部署运行
 ```sh
@@ -48,15 +48,15 @@ docker swarm init
 ./deploy.sh
 ```
 # 登录
-打开浏览器，访问（服务器ip：port/login）,比如在本地启动服务器，默认端口5000：  
+打开浏览器，访问（服务器ip：port/login）,比如在本地启动服务器，默认端口5000：
 访问127.0.0.1:5000/login
 
 # 登出
-打开浏览器，访问（服务器ip：port/logout）,比如在本地启动服务器，默认端口5000：  
+打开浏览器，访问（服务器ip：port/logout）,比如在本地启动服务器，默认端口5000：
 访问127.0.0.1:5000/logout
 
 # edit
-打开浏览器，访问（服务器ip：port/edit/用户名）,比如在本地启动服务器，默认端口5000：  
+打开浏览器，访问（服务器ip：port/edit/用户名）,比如在本地启动服务器，默认端口5000：
 访问127.0.0.1:5000/edit/ljx
 
 # Reference
