@@ -5,7 +5,7 @@ services:
       depends_on:
         - db
       deploy:
-        replicas: 1
+        replicas: 5
         restart_policy:
           condition: on-failure
       ports:
